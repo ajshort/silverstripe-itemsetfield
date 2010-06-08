@@ -18,7 +18,7 @@ class ManyManyPickerField extends ItemSetField {
 		
 		list($parentClass, $componentClass, $parentField, $componentField, $table) = $parent->many_many($this->name);
 		$this->joinTable = $table;
-		$this->otherClass = ( $parentClass == $parent->class ) ? $componentClass : $parentClass;
+		$this->otherClass = ( $parent->class == $parentClass || ClassInfo::is_subclass_of($parent->class, $parentClass)) ? $componentClass : $parentClass;
 	}
 	
 	function Items() {
