@@ -37,6 +37,18 @@ var dialog_for = function(el) {
 }
 
 var request = function(eventel, ajax){
+	
+	var button = eventel; 
+	var origText = eventel.val();
+	// it the event element is not a button, it should be a form
+	// so try to input
+	if(button.val() == '') {
+		button = button.find('input.action');
+	}
+	// set processing/loading mode
+	button.val('Processing...');
+	button.attr('disabled', 'true');
+	
 	$.ajax($.extend({}, ajax, {
 		dataType: 'html',
 		success: function(data){
@@ -58,6 +70,11 @@ var request = function(eventel, ajax){
 			else {
 				dialog_for(eventel).empty().append(el).dialog('open');
 			}
+		},
+		complete: function() {
+			// reset processing/loading mode
+			button.removeAttr('disabled'); 
+			button.val(origText);
 		},
 		error: function(){
 			statusMessage('Couldnt execute action', 'bad');
