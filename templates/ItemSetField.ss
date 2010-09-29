@@ -6,8 +6,13 @@
 <% require javascript(itemsetfield/javascript/ItemSetField.js) %>
 
 <div id="$ID" class='item-set-field <% if Sortable %>sortable<% end_if %>' rel='$Link'>
+	<p class="heading">$Title</p>
 	<ul>
-	<% control ItemForms %>$ForTemplate<% end_control %>
+		<% if ItemForms %>
+			<% control ItemForms %>$ForTemplate<% end_control %>
+		<% else %>
+			<li class="no-items-text">There's no items selected.</li>
+		<% end_if %>
 	</ul>
 
 	<div class='item-set-field-actions'>	

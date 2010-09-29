@@ -1,7 +1,9 @@
 (function($){
 
 $('.item-set-field.sortable ul').livequery(
-	function(){ $(this).sortable() }
+	function(){ $(this).sortable({
+		axis: 'y'
+	})}
 );
 
 var dialog_for = function(el) {
