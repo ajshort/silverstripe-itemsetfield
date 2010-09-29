@@ -11,7 +11,7 @@
 		<% if ItemForms %>
 			<% control ItemForms %>$ForTemplate<% end_control %>
 		<% else %>
-			<li class="no-items-text">There's no items selected.</li>
+			<li class="no-items-text">There's no items found.</li>
 		<% end_if %>
 	</ul>
 
