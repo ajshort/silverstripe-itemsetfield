@@ -111,7 +111,15 @@ abstract class ItemSetField extends FormField {
 	}
 	
 	function handleItem($req) {
-		$item = $this->Items()->find('ID', $req->param('ItemID'));
+		// Comes from search and add request
+		if($this->searchClass) {
+			$item = DataObject::get_by_id($this->searchClass, $req->param('ItemID'));
+		}
+		// Come from remove request
+		else {
+			$item = $this->Items()->find('ID', $req->param('ItemID'));
+		}
+
 		if ($item) return $this->ItemForm($item);
 	}
 }
