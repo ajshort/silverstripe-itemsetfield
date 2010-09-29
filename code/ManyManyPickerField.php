@@ -4,11 +4,20 @@
  * relationships.
  */
 class ManyManyPickerField extends HasManyPickerField {
+	
+	/**
+	 * @var int
+	 */
+	protected $searchLimit = null; 
 
 	public function __construct($parent, $name, $title=null, $options=null) {
 		if (isset($options['SortColumn'])) {
 			$this->SortColumn = $options['SortColumn'];
 			$options['Sortable'] = true;
+		}
+		
+		if (isset($options['SearchLimit'])) {
+			$this->searchLimit = $options['SearchLimit'];
 		}
 
 		parent::__construct($parent, $name, $title, $options);
@@ -24,8 +33,12 @@ class ManyManyPickerField extends HasManyPickerField {
 
 	public function Items() {
 		$accessor = $this->name;
-		if ($this->SortColumn) return $this->parent->getManyManyComponents($accessor, '', "\"{$this->joinTable}\".\"{$this->SortColumn}\"");
-		return $this->parent->$accessor();
+		if ($this->SortColumn) {
+			return $this->parent->getManyManyComponents($accessor, '', "\"{$this->joinTable}\".\"{$this->SortColumn}\"");
+		}
+		else {
+			return $this->parent->$accessor();
+		}
 	}
 
 	public function ResultsForm($search) {
@@ -35,6 +48,7 @@ class ManyManyPickerField extends HasManyPickerField {
 
 		$field = new ManyManyPickerField_SearchField($this);
 		$field->setSearchCriteria($search);
+		if($this->searchLimit) $field->setLimit($this->searchLimit); 
 
 		return new Form(
 			$this, 'ResultsForm', new FieldSet($field), new FieldSet()
