@@ -100,5 +100,17 @@ $('.item-set-field form, .item-set-dialog form').livequery('submit', function(e)
 	});
 });
 
+// Native reset button doesn't work since form is reloaded previous search values 
+// in the fields that are treated as defaults
+$('.item-set-dialog form').livequery('reset', function(e) {
+	e.preventDefault();
+	
+	form = $(this);
+	// Reset all field, except action buttons and hidden fields
+	form.find('input, select').not('.action, :hidden')
+		.val('')
+		.removeAttr('checked')
+		.removeAttr('selected');
+});
 
 })(jQuery);
