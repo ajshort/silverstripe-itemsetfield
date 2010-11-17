@@ -1,6 +1,6 @@
 (function($){
 
-$('.item-set-field ul').livequery(
+$('.item-set-field.sortable ul').livequery(
 	function(){ $(this).sortable() }
 );
 

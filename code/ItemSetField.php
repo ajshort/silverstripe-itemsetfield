@@ -33,7 +33,15 @@ abstract class ItemSetField extends FormField {
 		Requirements::css('itemsetfield/css/itemsetfield.css');
 		Requirements::javascript('itemsetfield/javascript/ItemSetField.js');
 	}
-		
+
+	public function getOption($name) { 
+		if(array_key_exists($name, $this->options)) return $this->options[$name]; 
+	} 
+
+	public function setOption($name, $value) { 
+		$this->options[$name] = $value; 
+	} 
+
 	abstract function Items();
 	
 	/** The actions peformable on a given item. By default uses the static variable item_actions */

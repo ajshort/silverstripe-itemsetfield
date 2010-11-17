@@ -1,4 +1,4 @@
-<div id='$Name' class='item-set-field' rel='$Link'>
+<div id='$Name' class='item-set-field <% if Sortable %>sortable<% end_if %>' rel='$Link'>
 	<ul>
 	<% control ItemForms %>$ForTemplate<% end_control %>
 	</ul>
