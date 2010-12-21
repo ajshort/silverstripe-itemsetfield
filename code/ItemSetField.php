@@ -29,7 +29,7 @@ abstract class ItemSetField extends FormField {
 		Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
 		Requirements::javascript(THIRDPARTY_DIR . '/jquery-livequery/jquery.livequery.js');
 		Requirements::javascript(THIRDPARTY_DIR . '/jquery-ui/jquery-ui-1.8rc3.custom.js');
-		Requirements::css('itemsetfield/css/jquery.ui.smoothness/ui.all.css');
+		Requirements::css(THIRDPARTY_DIR . '/jquery-ui-themes/smoothness/jquery-ui-1.8rc3.custom.css');
 		Requirements::css('itemsetfield/css/itemsetfield.css');
 		Requirements::javascript('itemsetfield/javascript/ItemSetField.js');
 	}
