@@ -5,7 +5,7 @@
 <% require css(itemsetfield/css/itemsetfield.css) %>
 <% require javascript(itemsetfield/javascript/ItemSetField.js) %>
 
-<div id='$Name' class='item-set-field <% if Sortable %>sortable<% end_if %>' rel='$Link'>
+<div id="$ID" class='item-set-field <% if Sortable %>sortable<% end_if %>' rel='$Link'>
 	<ul>
 	<% control ItemForms %>$ForTemplate<% end_control %>
 	</ul>
