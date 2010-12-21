@@ -196,6 +196,13 @@ class ItemSetField_Item extends RequestHandler {
 	function forTemplate() {
 		return $this->renderWith('ItemSetField_Item');
 	}
+
+	public function Link() {
+		return Controller::join_links(
+			$this->parent->Link(), 'item', $this->item->ID
+		);
+	}
+
 }
 
 class ItemSetField_ListItem extends ItemSetField_Item {
