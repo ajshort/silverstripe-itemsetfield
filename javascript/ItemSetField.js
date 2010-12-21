@@ -5,22 +5,33 @@ $('.item-set-field.sortable ul').livequery(
 );
 
 var dialog_for = function(el) {
-	/* If we're in an item-set-field, we want a special dialog just for us */
-	var field = el.parents('.item-set-field').eq(0);
-	if (field.length) {
-		var dialog = field.data('item-set-dialog');
-		
-		if (!dialog) {
-			dialog = $("<div class='item-set-dialog'></div>").appendTo('body');
-			dialog.dialog({autoOpen: false, modal: true, width: 400, height: 600, draggable: false, resizable: false});
-			field.data('item-set-dialog', dialog);
-		}
-		
-		return dialog;
+	// If we're in a dialog already, just return that.
+	var existing = el.parents('.item-set-dialog');
+
+	if (existing.length) {
+		return existing;
 	}
-		
-	/* Otherwise, assume we're in a dialog all ready */
-	return el.parents('.item-set-dialog').eq(0);
+
+	// Otherwise spawn one off the item set field.
+	var field  = el.parents('.item-set-field').eq(0);
+	var dialog = field.data('item-set-dialog');
+
+	if (!dialog) {
+		var dialog = $('<div class="item-set-dialog"></div>')
+			.appendTo('body')
+			.dialog({
+				autoOpen: false,
+				modal: true,
+				width: 400,
+				height: 600,
+				draggable: false,
+				resizable: false
+			})
+
+		field.data('item-set-dialog', dialog);
+	}
+
+	return dialog;
 }
 
 var request = function(eventel, ajax){
