@@ -70,9 +70,12 @@ class ManyManyPickerField_Item extends ItemSetField_ListItem {
 		$method = $this->parent->parent->getOption('ExtraFields');
 		$fields = $this->item->$method();
 
-		return new Form($this, 'AddForm', $fields, new FieldSet(
+		$form = new Form($this, 'AddForm', $fields, new FieldSet(
 			new FormAction('doAdd', _t('ItemSetField.ADD', 'Add'))
 		));
+		$form->loadDataFrom($this->item);
+
+		return $form;
 	}
 
 	public function doAdd($data, $form) {
