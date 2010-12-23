@@ -37,6 +37,18 @@ var dialog_for = function(el) {
 }
 
 var request = function(eventel, ajax){
+	
+	var button = eventel; 
+	var origText = eventel.val();
+	// it the event element is not a button, it should be a form
+	// so try to input
+	if(button.val() == '') {
+		button = button.find('input.action');
+	}
+	// set processing/loading mode
+	button.val('Processing...');
+	button.attr('disabled', 'true');
+	
 	$.ajax($.extend({}, ajax, {
 		dataType: 'html',
 		success: function(data){
@@ -58,6 +70,11 @@ var request = function(eventel, ajax){
 			else {
 				dialog_for(eventel).empty().append(el).dialog('open');
 			}
+		},
+		complete: function() {
+			// reset processing/loading mode
+			button.removeAttr('disabled'); 
+			button.val(origText);
 		},
 		error: function(){
 			statusMessage('Couldnt execute action', 'bad');
@@ -83,5 +100,17 @@ $('.item-set-field form, .item-set-dialog form').livequery('submit', function(e)
 	});
 });
 
+// Native reset button doesn't work since form is reloaded previous search values 
+// in the fields that are treated as defaults
+$('.item-set-dialog form').livequery('reset', function(e) {
+	e.preventDefault();
+	
+	form = $(this);
+	// Reset all field, except action buttons and hidden fields
+	form.find('input, select').not('.action, :hidden')
+		.val('')
+		.removeAttr('checked')
+		.removeAttr('selected');
+});
 
 })(jQuery);
