@@ -21,10 +21,10 @@ abstract class ItemSetField extends FormField {
 		'' => 'FieldHolder'
 	);
 	
-	function __construct($name, $title = null, $options = null) {
+	function __construct($name, $title = null, $options = array()) {
 		parent::__construct($name, $title);
 
-		$this->options = array_merge($options ? $options : array(), self::$defaults);
+		$this->options = array_merge(self::$defaults, $options ? $options : array());
 
 		Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
 		Requirements::javascript(THIRDPARTY_DIR . '/jquery-livequery/jquery.livequery.js');
