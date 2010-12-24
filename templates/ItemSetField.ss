@@ -1,23 +1,23 @@
 <% require javascript(sapphire/thirdparty/jquery/jquery.js) %>
-<% require javascript(sapphire/thirdparty/jquery-livequery/jquery.livequery.js) %>
 <% require javascript(sapphire/thirdparty/jquery-ui/jquery-ui-1.8rc3.custom.js) %>
-<% require css(itemsetfield/css/jquery.ui.smoothness/ui.all.css) %>
-<% require css(itemsetfield/css/itemsetfield.css) %>
 <% require javascript(itemsetfield/javascript/ItemSetField.js) %>
+<% require css(itemsetfield/css/jquery.ui.smoothness/ui.all.css) %>
+<% require css(itemsetfield/css/ItemSetField.css) %>
 
-<div id="$ID" class='item-set-field <% if Sortable %>sortable<% end_if %>' rel='$Link'>
-	<p class="heading">$Title</p>
-	<ul>
+<div id="$ID" class="itemsetfield <% if Sortable %>itemsetfield-sortable<% end_if %>" rel="$Link">
+	<p class="itemsetfield-heading">$Title</p>
+
+	<ul class="itemsetfield-items">
 		<% if ItemForms %>
 			<% control ItemForms %>$ForTemplate<% end_control %>
 		<% else %>
-			<li class="no-items-text"><% _t('NOITEMS', 'There are no items selected.') %></li>
+			<li class="itemsetfield-noitems"><% _t('NOITEMS', 'There are no items selected.') %></li>
 		<% end_if %>
 	</ul>
 
-	<div class='item-set-field-actions'>	
+	<div class="itemsetfield-actions">
 		<% control Actions %>
-			<input class='item-set-field-action $ExtraClass' type='button' value='$Name' rel='$Link'/>
+			<a href="$Link" class="itemsetfield-action $ExtraClass">$Name</a>
 		<% end_control %>
 	</div>
 </div>

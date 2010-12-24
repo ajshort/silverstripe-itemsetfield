@@ -136,14 +136,15 @@ class ItemSetField_Action extends ViewableData {
 	function setID($id) {
 		$this->ID = $id;
 	}
-	
+
+	public function Name() {
+		return $this->name;
+	}
+
 	function Link() {
 		return Controller::join_links($this->itemSet->Link(), 'item', $this->ID, $this->action);
 	}
-	
-	function Field() {
-		return "<input type='button' class='item-set-field-action' rel='{$this->Link()}' value='{$this->name}' />";
-	}
+
 }
 
 class ItemSetField_Item extends RequestHandler {
