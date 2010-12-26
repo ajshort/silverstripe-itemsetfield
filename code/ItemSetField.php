@@ -89,8 +89,11 @@ abstract class ItemSetField extends FormField {
 	 * @return int
 	 */
 	public function getPaginationStart() {
-		$request = Controller::curr()->getRequest();
-		$vars    = $request->getVars();
+		if (!$request = Controller::curr()->getRequest()) {
+			return 0;
+		}
+
+		$vars = $request->getVars();
 
 		if (isset($vars['ItemSetField'][$this->Name()]['start'])) {
 			$start = $vars['ItemSetField'][$this->Name()]['start'];
