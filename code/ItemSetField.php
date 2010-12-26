@@ -11,8 +11,7 @@ abstract class ItemSetField extends FormField {
 
 	public static $default_options = array(
 		'Sortable'  => false,
-		'Pageable'  => false,
-		'DisplayAs' => 'list'
+		'Pageable'  => false
 	);
 
 	static $url_handlers = array(
@@ -60,18 +59,9 @@ abstract class ItemSetField extends FormField {
 			new HiddenField($this->name.'[]', null, $item->ID)
 		);
 	}
-	
-	function ItemClass() {
-		switch ($this->options['DisplayAs']) {
-			case 'list':
-				return 'ItemSetField_ListItem';
-			case 'table':
-				return 'ItemSetField_TableItem';
-			case 'block':
-				return 'ItemSetField_BlockItem';
-			default:
-				user_error('Unknown ItemSet display type', E_USER_ERROR);
-		}
+
+	public function ItemClass() {
+		return 'ItemSetField_Item';
 	}
 
 	function ItemForm($item) {
@@ -202,17 +192,7 @@ class ItemSetField_Item extends RequestHandler {
 		return $this->renderWith('ItemSetField_Item');
 	}
 
-	public function Link() {
-		return Controller::join_links(
-			$this->parent->Link(), 'item', $this->item->ID
-		);
-	}
-
-}
-
-class ItemSetField_ListItem extends ItemSetField_Item {
-	
-	function Label() {
+	public function Label() {
 		if (method_exists($this->item, 'Summary')) $summary = $this->item->Summary();  
 		else {
 			$summary = array();
@@ -222,7 +202,14 @@ class ItemSetField_ListItem extends ItemSetField_Item {
 			}
 			$summary = implode(', ', $summary);
 		}
-		
+
 		return $summary;
 	}
+
+	public function Link() {
+		return Controller::join_links(
+			$this->parent->Link(), 'item', $this->item->ID
+		);
+	}
+
 }

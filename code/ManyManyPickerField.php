@@ -51,7 +51,7 @@ class ManyManyPickerField_SearchField extends HasManyPickerField_SearchField {
 
 }
 
-class ManyManyPickerField_Item extends ItemSetField_ListItem {
+class ManyManyPickerField_Item extends ItemSetField_Item {
 
 	public function Choose($data) {
 		// If we need to get additional data to populate the extra relationship
