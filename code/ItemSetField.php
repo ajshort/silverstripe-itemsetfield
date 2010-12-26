@@ -220,7 +220,10 @@ class ItemSetField_ListItem extends ItemSetField_Item {
 		if (method_exists($this->item, 'Summary')) $summary = $this->item->Summary();  
 		else {
 			$summary = array();
-			foreach ($this->item->summaryFields() as $field => $nice) $summary[] = ($this->item->XML_val($field)) ? $this->item->XML_val($field) : $this->item->$field; 
+			foreach ($this->item->summaryFields() as $field => $nice) {
+				$val = ($this->item->XML_val($field)) ? $this->item->XML_val($field) : $this->item->$field;
+				if ($val) $summary[] = $val;
+			}
 			$summary = implode(', ', $summary);
 		}
 		
