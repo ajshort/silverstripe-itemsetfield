@@ -4,7 +4,7 @@ abstract class ItemSetField extends FormField {
 
 	/* Actions that can be on the set as a whole */
 	static $actions = array();
-	
+
 	/* Actions that can be performed per-item. For more programatic calculation, override ItemActions, which is always called rather than accessing this directly */
 	static $item_actions = array();
 	static $item_default_action = null;
@@ -30,13 +30,13 @@ abstract class ItemSetField extends FormField {
 		$this->options = array_merge($defaults, $options ? $options : array());
 	}
 
-	public function getOption($name) { 
-		if(array_key_exists($name, $this->options)) return $this->options[$name]; 
-	} 
+	public function getOption($name) {
+		if(array_key_exists($name, $this->options)) return $this->options[$name];
+	}
 
-	public function setOption($name, $value) { 
-		$this->options[$name] = $value; 
-	} 
+	public function setOption($name, $value) {
+		$this->options[$name] = $value;
+	}
 
 	/**
 	 * Returns all items displayed in the set field.
@@ -54,7 +54,7 @@ abstract class ItemSetField extends FormField {
 		}
 
 		$result = $query->execute();
-		$set    = singleton('DataObject')->buildDataObjectSet($result);
+		$set   = singleton('DataObject')->buildDataObjectSet($result);
 
 		if ($set) {
 			$set->parseQueryLimit($query);
@@ -103,13 +103,13 @@ abstract class ItemSetField extends FormField {
 		foreach ($this->stat('item_actions') as $name) $actions->push(new ItemSetField_Action($this, $name, $name));
 		return $actions;
 	}
-	
+
 	/** The default action when clicking on an item. By default uses the static variable item_default_action */
 	function ItemDefaultAction($item) {
-		if ($action = $this->stat('item_default_action')) return new ItemSetField_Action($this, $action, $action); 
+		if ($action = $this->stat('item_default_action')) return new ItemSetField_Action($this, $action, $action);
 		return null;
 	}
-	
+
 
 	/** The fields needed for a given item. By default stores a hidden input to save ID with. */
 	function ItemFields($item) {
@@ -131,7 +131,7 @@ abstract class ItemSetField extends FormField {
 	 * @return DataObjectSet
 	 */
 	public function ItemForms() {
-		$set   = new DataObjectSet();
+		$set   = new PaginationContextSet();
 		$items = $this->Items();
 
 		if (!$items) return $set;
@@ -166,20 +166,20 @@ abstract class ItemSetField extends FormField {
 			if ($class == 'FormField') break;
 			$templates[] = $class;
 		}
-		
+
 		return $this->renderWith($templates);
 	}
-	
+
 	function Actions() {
 		$actions = new DataObjectSet();
 		foreach ($this->stat('actions') as $k => $v) {
 			if (is_numeric($k)) $actions->push(new ArrayData(array('Name' => $v, 'Link' => Controller::join_links($this->Link(), $v))));
 			else                $actions->push(new ArrayData(array('Name' => $k, 'Link' => Controller::join_links($this->Link(), $k), 'ExtraClass' => $v)));
 		}
-		
+
 		return $actions;
 	}
-	
+
 	function handleItem($req) {
 		// Comes from search and add request
 		if($this->searchClass) {
@@ -197,12 +197,12 @@ abstract class ItemSetField extends FormField {
 class ItemSetField_Action extends ViewableData {
 	function __construct($itemSet, $action, $name) {
 		parent::__construct();
-		
+
 		$this->itemSet = $itemSet;
 		$this->action = $action;
 		$this->name = $name;
 	}
-	
+
 	function setID($id) {
 		$this->ID = $id;
 	}
@@ -220,32 +220,32 @@ class ItemSetField_Action extends ViewableData {
 class ItemSetField_Item extends RequestHandler {
 	function __construct($parent, $item, $fields = null, $actions = null, $defaultAction = null) {
 		parent::__construct();
-		
+
 		$this->parent = $parent;
 		$this->item = $item;
-		
+
 		$this->setFields($fields);
 		$this->setActions($actions);
 		$this->setDefaultAction($defaultAction);
 	}
-	
+
 	static $url_handlers = array(
 		'$Action!' => 'handleAction',
 	);
-	
+
 	function handleAction($request) {
 		$action = $request->param('Action');
-		
+
 		if (method_exists($this, $action) && $this->checkAccessAction($action)) {
 			return $this->$action($request);
 		}
 		else if ($this->parent->checkAccessAction($action)) {
 			return $this->parent->$action($request, $this->item);
 		}
-		
+
 		return $this->httpError(403, "Action '$action' isn't allowed on class $this->class");
 	}
-	
+
 	function getFields() {
 		return $this->fields;
 	}
@@ -253,31 +253,31 @@ class ItemSetField_Item extends RequestHandler {
 	function setFields($fields) {
 		$this->fields = $fields;
 	}
-	
+
 	function setActions($actions) {
 		$this->actions = $actions;
 		if ($this->actions) foreach ($this->actions as $action) $action->setID($this->item->ID);
 	}
-	
+
 	function getActions() {
 		return $this->actions;
 	}
-	
+
 	function setDefaultAction($action) {
 		$this->defaultAction = $action;
 		if ($this->defaultAction) $this->defaultAction->setID($this->item->ID);
 	}
-	
+
 	function getDefaultAction() {
 		return $this->defaultAction;
 	}
-	
+
 	function forTemplate() {
 		return $this->renderWith('ItemSetField_Item');
 	}
 
 	public function Label() {
-		if (method_exists($this->item, 'Summary')) $summary = $this->item->Summary();  
+		if (method_exists($this->item, 'Summary')) $summary = $this->item->Summary();
 		else {
 			$summary = array();
 			foreach ($this->item->summaryFields() as $field => $nice) {

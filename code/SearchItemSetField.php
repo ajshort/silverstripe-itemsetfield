@@ -1,12 +1,12 @@
 <?php
 
 class SearchItemSetField extends ItemSetField {
-	
+
 	function __construct($class, $name, $title=null, $options=null) {
 		parent::__construct($name, $title, $options);
 		$this->searchClass = $class;
 	}
-	
+
 	function setSearchCriteria($searchCriteria) {
 		$this->searchCriteria = $searchCriteria;
 	}
