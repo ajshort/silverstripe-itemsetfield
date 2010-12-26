@@ -62,6 +62,12 @@ Below is a listing of options available one each class:
 
 *  **Sortable** (`bool`) - Either enables or disables the drag and drop ordering
    selected items.
+*  **ExtraFields** (`string`) - This is a string which corresponds to a method
+   name on the object being attached across the relationship. This method should
+   return a FieldSet, containing fields which correspond to values in the
+   `$many_many_extraFields` definition. When a user selects an item, they will
+   be shown the form, and then when they add the object the `many_many` link
+   table's extra fields will be populated with the values they input.
 
 ## Project Links
 *  [GitHub Project Page](https://github.com/ajshort/silverstripe-itemsetfield)
