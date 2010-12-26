@@ -18,7 +18,7 @@ var request = function(element, params, callback) {
 					field.data('itemsetfield-dialog').dialog('close');
 				}
 
-				field.replaceWith(data);
+				field.replaceWith(el);
 			}
 			// Otherwise spawn a dialog
 			else {
