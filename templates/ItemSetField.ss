@@ -15,6 +15,32 @@
 		<% end_if %>
 	</ul>
 
+	<% if ItemForms.MoreThanOnePage %>
+		<div class="itemsetfield-pagination ui-state-default ui-corner-all">
+			<% if ItemForms.NotFirstPage %>
+				<a class="itemsetfield-action itemsetfield-pagination-prev" href="$ItemForms.PrevLink">
+					&laquo; <% _t('PREVIOUS', 'Previous') %>
+				</a>
+			<% end_if %>
+			<% control ItemForms.PaginationSummary(4) %>
+				<% if CurrentBool %>
+					<span class="itemsetfield-pagination-current">$PageNum</span>
+				<% else %>
+					<% if Link %>
+						<a class="itemsetfield-action" href="$Link">$PageNum</a>
+					<% else %>
+						&hellip;
+					<% end_if %>
+				<% end_if %>
+			<% end_control %>
+			<% if ItemForms.NotLastPage %>
+				<a class="itemsetfield-action itemsetfield-pagination-next" href="$ItemForms.NextLink">
+					<% _t('NEXT', 'Next') %> &raquo;
+				</a>
+			<% end_if %>
+		</div>
+	<% end_if %>
+
 	<div class="itemsetfield-actions">
 		<% control Actions %>
 			<a href="$Link" class="itemsetfield-action $ExtraClass">$Name</a>

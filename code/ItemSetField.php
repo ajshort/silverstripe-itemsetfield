@@ -10,8 +10,9 @@ abstract class ItemSetField extends FormField {
 	static $item_default_action = null;
 
 	public static $default_options = array(
-		'Sortable'  => false,
-		'Pageable'  => false
+		'Sortable'     => false,
+		'Pageable'     => true,
+		'ItemsPerPage' => 15
 	);
 
 	static $url_handlers = array(
@@ -44,6 +45,14 @@ abstract class ItemSetField extends FormField {
 	 */
 	public function Items() {
 		$query  = $this->getItemsQuery();
+
+		if ($this->getOption('Pageable')) {
+			$query->limit(array(
+				'start' => $this->getPaginationStart(),
+				'limit' => $this->getOption('ItemsPerPage')
+			));
+		}
+
 		$result = $query->execute();
 		$set    = singleton('DataObject')->buildDataObjectSet($result);
 
@@ -68,6 +77,24 @@ abstract class ItemSetField extends FormField {
 		throw new Exception(
 			'Please implement getItemsQuery on your ItemSetField subclass.'
 		);
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getPaginationStart() {
+		$request = Controller::curr()->getRequest();
+		$vars    = $request->getVars();
+
+		if (isset($vars['ItemSetField'][$this->Name()]['start'])) {
+			$start = $vars['ItemSetField'][$this->Name()]['start'];
+
+			if (ctype_digit($start) && (int) $start > 0) {
+				return (int) $start;
+			}
+		}
+
+		return 0;
 	}
 
 	/** The actions peformable on a given item. By default uses the static variable item_actions */
@@ -100,13 +127,27 @@ abstract class ItemSetField extends FormField {
 		return new $class($this, $item, $this->ItemFields($item), $this->ItemActions($item), $this->ItemDefaultAction($item));
 	}
 
+	/**
+	 * @return DataObjectSet
+	 */
 	public function ItemForms() {
 		$set   = new DataObjectSet();
 		$items = $this->Items();
 
-		if ($items) foreach ($items as $item) {
+		if (!$items) return $set;
+
+		foreach ($items as $item) {
 			$set->push($this->ItemForm($item));
 		}
+
+		$limits = $items->getPageLimits();
+		$set->setPageLimits(
+			$limits['pageStart'], $limits['pageLength'], $limits['totalSize']
+		);
+
+		$set->setPaginationGetVar(sprintf(
+			'ItemSetField[%s][start]', $this->Name()
+		));
 
 		return $set;
 	}
