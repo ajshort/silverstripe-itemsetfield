@@ -161,6 +161,8 @@ abstract class ItemSetField extends FormField {
 	}
 
 	function FieldHolder() {
+		Requirements::add_i18n_javascript('itemsetfield/javascript/lang');
+
 		$templates = array();
 		foreach (array_reverse(ClassInfo::ancestry($this)) as $class) {
 			if ($class == 'FormField') break;

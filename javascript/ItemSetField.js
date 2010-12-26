@@ -26,9 +26,7 @@ var request = function(element, params, callback) {
 			}
 		},
 		error: function() {
-			statusMessage(
-				ss.i18n._t('ItemSetField.ERROR', 'Couldn\'t execute action'),
-				'bad');
+			alert(ss.i18n._t('ItemSetField.ERROR', 'Couldn\'t execute action'));
 		},
 		complete: function() {
 			callback();
@@ -59,7 +57,6 @@ var dialogFor = function(element) {
 				draggable: true,
 				resizable: false
 			});
-		console.debug(field);
 		field.data('itemsetfield-dialog', dialog);
 	}
 
