@@ -17,10 +17,6 @@ class ManyManyPickerField extends HasManyPickerField {
 		$this->otherClass = ( $parent->class == $parentClass || ClassInfo::is_subclass_of($parent->class, $parentClass)) ? $componentClass : $parentClass;
 	}
 
-	public function Sortable() {
-		return $this->getOption('Sortable');
-	}
-
 	public function getItemsQuery() {
 		if ($this->getOption('Sortable')) {
 			$sort = "\"{$this->joinTable}\".\"ID\"";

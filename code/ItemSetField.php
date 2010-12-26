@@ -33,6 +33,13 @@ abstract class ItemSetField extends FormField {
 		if(array_key_exists($name, $this->options)) return $this->options[$name];
 	}
 
+	/**
+	 * A template-accessable version of {@link ItemSetField::getOption()}.
+	 */
+	public function Option($name) {
+		return $this->getOption($name);
+	}
+
 	public function setOption($name, $value) {
 		$this->options[$name] = $value;
 	}
