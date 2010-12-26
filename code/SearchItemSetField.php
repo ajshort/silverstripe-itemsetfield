@@ -10,16 +10,14 @@ class SearchItemSetField extends ItemSetField {
 	function setSearchCriteria($searchCriteria) {
 		$this->searchCriteria = $searchCriteria;
 	}
-	
-	function Items() {
-		if (!$this->searchCriteria) return null;
-		
-		$context = singleton($this->searchClass)->getDefaultSearchContext();
-		$query = $context->getQuery($this->searchCriteria);
-		
-		$dos = new DataObjectSet();
-		foreach ($query->execute() as $record) $dos->push(new $this->searchClass($record));
-		
-		return $dos;
+
+	public function getItemsQuery() {
+		if (!$this->searchCriteria) return;
+
+		$class   = singleton($this->searchClass);
+		$context = $class->getDefaultSearchContext();
+
+		return $context->getQuery($this->searchCriteria);
 	}
+
 }

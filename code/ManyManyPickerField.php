@@ -22,10 +22,14 @@ class ManyManyPickerField extends HasManyPickerField {
 		return $this->getOption('Sortable');
 	}
 
-	public function Items() {
-		$accessor = $this->name;
-		if ($this->SortColumn) return $this->parent->getManyManyComponents($accessor, '', "\"{$this->joinTable}\".\"{$this->SortColumn}\"");
-		return $this->parent->$accessor();
+	public function getItemsQuery() {
+		if ($this->SortColumn) {
+			$sort = "\"{$this->joinTable}\".\"{$this->SortColumn}\"";
+		} else {
+			$sort = null;
+		}
+
+		return $this->parent->getManyManyComponentsQuery($this->name, '', $sort);
 	}
 
 	public function ResultsForm($search) {

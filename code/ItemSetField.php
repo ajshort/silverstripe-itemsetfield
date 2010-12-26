@@ -19,8 +19,8 @@ abstract class ItemSetField extends FormField {
 		'$Action!' => '$Action',
 		'' => 'FieldHolder'
 	);
-	
-	function __construct($name, $title = null, $options = array()) {
+
+	public function __construct($name, $title = null, $options = array()) {
 		parent::__construct($name, $title);
 
 		$defaults = Object::combined_static(
@@ -37,8 +37,39 @@ abstract class ItemSetField extends FormField {
 		$this->options[$name] = $value; 
 	} 
 
-	abstract function Items();
-	
+	/**
+	 * Returns all items displayed in the set field.
+	 *
+	 * @return DataObjectSet
+	 */
+	public function Items() {
+		$query  = $this->getItemsQuery();
+		$result = $query->execute();
+		$set    = singleton('DataObject')->buildDataObjectSet($result);
+
+		if ($set) {
+			$set->parseQueryLimit($query);
+		}
+
+		return $set;
+	}
+
+	/**
+	 * Returns a query that can be used to retrieve the items from the
+	 * database. This is used rather than a plain result so that the query can
+	 * be manipulated.
+	 *
+	 * NOTE: This is not marked as abstract as not all classes will implement
+	 * it. You can also overload {@link ItemSetField::Items()}.
+	 *
+	 * @return SQLQuery
+	 */
+	public function getItemsQuery() {
+		throw new Exception(
+			'Please implement getItemsQuery on your ItemSetField subclass.'
+		);
+	}
+
 	/** The actions peformable on a given item. By default uses the static variable item_actions */
 	function ItemActions($item) {
 		$actions = new DataObjectSet();
@@ -68,14 +99,18 @@ abstract class ItemSetField extends FormField {
 		$class = $this->ItemClass();
 		return new $class($this, $item, $this->ItemFields($item), $this->ItemActions($item), $this->ItemDefaultAction($item));
 	}
-	
-	function ItemForms() {
-		$dos = new DataObjectSet() ;
-		foreach ($this->Items() as $item) $dos->push($this->ItemForm($item));	
-		
-		return $dos;
+
+	public function ItemForms() {
+		$set   = new DataObjectSet();
+		$items = $this->Items();
+
+		if ($items) foreach ($items as $item) {
+			$set->push($this->ItemForm($item));
+		}
+
+		return $set;
 	}
-	
+
 	function FieldHolder() {
 		$templates = array();
 		foreach (array_reverse(ClassInfo::ancestry($this)) as $class) {

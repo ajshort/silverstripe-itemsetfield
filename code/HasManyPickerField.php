@@ -29,11 +29,8 @@ class HasManyPickerField extends ItemSetField {
 		return $this->otherClass;
 	}
 
-	/**
-	 * @return DataObjectSet
-	 */
-	public function Items() {
-		return $this->parent->{$this->name}();
+	public function getItemsQuery() {
+		return $this->parent->getComponentsQuery($this->name);
 	}
 
 	public function saveInto(DataObject $record) {
