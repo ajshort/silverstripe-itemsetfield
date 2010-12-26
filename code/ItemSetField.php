@@ -25,13 +25,6 @@ abstract class ItemSetField extends FormField {
 		parent::__construct($name, $title);
 
 		$this->options = array_merge(self::$defaults, $options ? $options : array());
-
-		Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
-		Requirements::javascript(THIRDPARTY_DIR . '/jquery-livequery/jquery.livequery.js');
-		Requirements::javascript(THIRDPARTY_DIR . '/jquery-ui/jquery-ui-1.8rc3.custom.js');
-		Requirements::css(THIRDPARTY_DIR . '/jquery-ui-themes/smoothness/jquery-ui-1.8rc3.custom.css');
-		Requirements::css('itemsetfield/css/itemsetfield.css');
-		Requirements::javascript('itemsetfield/javascript/ItemSetField.js');
 	}
 
 	public function getOption($name) { 
