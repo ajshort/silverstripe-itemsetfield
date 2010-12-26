@@ -3,7 +3,7 @@
  * Performs a request, and either pops up a dialog or reloads the form depending
  * on the result.
  */
-var request = function(element, params, callback) {
+var request = function(element, title, params, callback) {
 	$.ajax($.extend(params, {
 		dataType: 'html',
 		success: function(data) {
@@ -22,7 +22,7 @@ var request = function(element, params, callback) {
 			}
 			// Otherwise spawn a dialog
 			else {
-				dialogFor(element).empty().append(el).dialog('open');
+				dialogFor(element, title).empty().append(el).dialog('open');
 			}
 		},
 		error: function() {
@@ -34,7 +34,7 @@ var request = function(element, params, callback) {
 	}));
 }
 
-var dialogFor = function(element) {
+var dialogFor = function(element, title) {
 	// If we're already in a dialog, just return it.
 	var existing = element.parents('.itemsetfield-dialog');
 
@@ -51,6 +51,7 @@ var dialogFor = function(element) {
 			.appendTo('body')
 			.dialog({
 				autoOpen:  false,
+				title:     title,
 				modal:     true,
 				width:     400,
 				height:    600,
@@ -58,6 +59,8 @@ var dialogFor = function(element) {
 				resizable: false
 			});
 		field.data('itemsetfield-dialog', dialog);
+	} else {
+		dialog.dialog('option', 'title', title);
 	}
 
 	return dialog;
@@ -82,7 +85,7 @@ $('a.itemsetfield-action').live('click', function() {
 	link.text(ss.i18n._t('ItemSetField.LOADING', 'Loading...'));
 	link.addClass('ui-state-disabled');
 
-	request(link, { url: $(this).attr('href') }, function() {
+	request(link, text, { url: $(this).attr('href') }, function() {
 		link.text(text).removeClass('ui-state-disabled');
 	});
 
@@ -91,7 +94,7 @@ $('a.itemsetfield-action').live('click', function() {
 
 $('.itemsetfield-dialog form').live('submit', function() {
 	var form    = $(this);
-	var actions = $('input.action', form);
+	var actions = $('input.action', form).eq(0);
 	var text    = actions.text();
 
 	actions.val(ss.i18n._t('ItemSetField.LOADING', 'Loading...'));
@@ -103,7 +106,7 @@ $('.itemsetfield-dialog form').live('submit', function() {
 		type: form.attr('method') || 'GET'
 	};
 
-	request(form, params, function() {
+	request(form, text, params, function() {
 		actions.text(text).removeAttr('disabled');
 	});
 
