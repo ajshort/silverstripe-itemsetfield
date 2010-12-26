@@ -145,6 +145,14 @@ abstract class ItemSetField extends FormField {
 			$limits['pageStart'], $limits['pageLength'], $limits['totalSize']
 		);
 
+		// Parse the current request URI, and replace the base so it points to
+		// this field for pagination.
+		$request = $_SERVER['REQUEST_URI'];
+		$parts   = parse_url($request);
+
+		$set->setPaginationBaseUrl(Controller::join_links(
+			$this->Link(), (isset($parts['query']) ? '?' . $parts['query'] : '')
+		));
 		$set->setPaginationGetVar(sprintf(
 			'ItemSetField[%s][start]', $this->Name()
 		));
