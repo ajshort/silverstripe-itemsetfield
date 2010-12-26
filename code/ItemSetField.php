@@ -8,13 +8,13 @@ abstract class ItemSetField extends FormField {
 	/* Actions that can be performed per-item. For more programatic calculation, override ItemActions, which is always called rather than accessing this directly */
 	static $item_actions = array();
 	static $item_default_action = null;
-	
-	static $defaults = array(
-		'Sortable' => false,
-		'Pageable' => false,
+
+	public static $default_options = array(
+		'Sortable'  => false,
+		'Pageable'  => false,
 		'DisplayAs' => 'list'
 	);
-	
+
 	static $url_handlers = array(
 		'item/$ItemID!' => 'handleItem',
 		'$Action!' => '$Action',
@@ -24,7 +24,10 @@ abstract class ItemSetField extends FormField {
 	function __construct($name, $title = null, $options = array()) {
 		parent::__construct($name, $title);
 
-		$this->options = array_merge(self::$defaults, $options ? $options : array());
+		$defaults = Object::combined_static(
+			$this->class, 'default_options', 'ItemSetField'
+		);
+		$this->options = array_merge($defaults, $options ? $options : array());
 	}
 
 	public function getOption($name) { 
