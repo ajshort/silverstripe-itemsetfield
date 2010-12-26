@@ -5,12 +5,11 @@
  */
 class ManyManyPickerField extends HasManyPickerField {
 
-	public function __construct($parent, $name, $title=null, $options=null) {
-		if (isset($options['SortColumn'])) {
-			$this->SortColumn = $options['SortColumn'];
-			$options['Sortable'] = true;
-		}
+	public static $default_options = array(
+		'Sortable' => false
+	);
 
+	public function __construct($parent, $name, $title=null, $options=null) {
 		parent::__construct($parent, $name, $title, $options);
 
 		list($parentClass, $componentClass, $parentField, $componentField, $table) = $parent->many_many($this->name);
@@ -23,8 +22,8 @@ class ManyManyPickerField extends HasManyPickerField {
 	}
 
 	public function getItemsQuery() {
-		if ($this->SortColumn) {
-			$sort = "\"{$this->joinTable}\".\"{$this->SortColumn}\"";
+		if ($this->getOption('Sortable')) {
+			$sort = "\"{$this->joinTable}\".\"ID\"";
 		} else {
 			$sort = null;
 		}
@@ -43,6 +42,17 @@ class ManyManyPickerField extends HasManyPickerField {
 		return new Form(
 			$this, 'ResultsForm', new FieldSet($field), new FieldSet()
 		);
+	}
+
+	public function saveInto(DataObject $record) {
+		if ($this->getOption('Sortable')) {
+			$set = $record->{$this->name}();
+
+			$set->removeAll();
+			$set->addMany($this->value);
+		} else {
+			parent::saveInto($record);
+		}
 	}
 
 }

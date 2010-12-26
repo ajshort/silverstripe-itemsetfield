@@ -10,7 +10,6 @@ abstract class ItemSetField extends FormField {
 	static $item_default_action = null;
 
 	public static $default_options = array(
-		'Sortable'     => false,
 		'Pageable'     => true,
 		'ItemsPerPage' => 15
 	);
