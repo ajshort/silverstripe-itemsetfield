@@ -30,7 +30,9 @@ class HasOnePickerField extends HasManyPickerField {
 	}
 
 	public function Items() {
-		return $this->parent->{$this->name};
+		if ($item = $this->parent->{$this->name}()) {
+			return new DataObjectSet(array($item));
+		}
 	}
 
 	public function saveInto(DataObject $record) {
