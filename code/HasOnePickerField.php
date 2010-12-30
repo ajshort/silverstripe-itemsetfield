@@ -30,8 +30,10 @@ class HasOnePickerField extends HasManyPickerField {
 	}
 
 	public function Items() {
-		if ($item = $this->parent->{$this->name}()) {
-			return new DataObjectSet(array($item));
+		if ($item = $this->parent->{$this->name . 'ID'}) {
+			return new DataObjectSet(array(
+				$this->parent->{$this->name}()
+			));
 		}
 	}
 
