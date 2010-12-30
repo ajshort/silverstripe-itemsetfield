@@ -41,7 +41,7 @@ class ManyManyPickerField extends HasManyPickerField {
 	}
 
 	public function saveInto(DataObject $record) {
-		if ($this->getOption('Sortable')) {
+		if ($this->value && $this->getOption('Sortable')) {
 			$set = $record->{$this->name}();
 
 			$set->removeAll();
