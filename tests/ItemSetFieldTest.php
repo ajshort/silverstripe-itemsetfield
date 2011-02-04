@@ -1,11 +1,12 @@
 <?php
-
+/**
+ * @package silverstripe-itemsetfield
+ */
 class ItemSetFieldTest extends FunctionalTest {
 
 	static $fixture_file = 'sapphire/tests/security/GroupTest.yml';
 
 	function testManymanypickerfieldShowsCurrentRelationsCorrectly() {
-
 		// field reflects current relations correctly
 		$admins = $this->objFromFixture('Group', 'admingroup');
 		$field = new ManyManyPickerField($admins, 'Members', 'Members');
@@ -17,7 +18,7 @@ class ItemSetFieldTest extends FunctionalTest {
 			$field->Items()
 		);
 	}
-	
+
 	function testSearchField() {
 		$admins = $this->objFromFixture('Group', 'admingroup');
 		$controller = new TestGroupController();
@@ -27,6 +28,21 @@ class ItemSetFieldTest extends FunctionalTest {
 
 		$this->assertContains('Child Group User', $raw, 'DataObject found.');
 	}
+
+	public function testFilterCallback() {
+		$admins = $this->objFromFixture('Group', 'admingroup');
+		$field  = new ManyManyPickerField($admins, 'Members', 'Member', array(
+			'FilterCallback' => create_function('$i', 'return $i->FirstName != "Admin";')
+		));
+
+		$this->assertDOSContains(
+			array(
+				array('FirstName' => 'All Group User')
+			),
+			$field->Items()
+		);
+	}
+
 }
 
 class TestGroupController extends Controller implements TestOnly {

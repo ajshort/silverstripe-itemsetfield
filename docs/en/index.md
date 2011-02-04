@@ -57,6 +57,9 @@ Below is a listing of options available one each class:
    items to display. It is enabled by default.
 *  **ItemsPerPage** (`int`) - The number of items to display on each pagination
    page. This defaults to 15.
+*  **FilterCallback** (`callback`) - A callback that is passed each object that
+   would be included in the results list. If the callback returns FALSE then the
+   item will not be included.
 
 ### ManyManyPickerField
 

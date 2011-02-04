@@ -10,8 +10,9 @@ abstract class ItemSetField extends FormField {
 	static $item_default_action = null;
 
 	public static $default_options = array(
-		'Pageable'     => true,
-		'ItemsPerPage' => 15
+		'Pageable'       => true,
+		'ItemsPerPage'   => 15,
+		'FilterCallback' => false
 	);
 
 	static $url_handlers = array(
@@ -64,6 +65,14 @@ abstract class ItemSetField extends FormField {
 
 		if ($set) {
 			$set->parseQueryLimit($query);
+		}
+
+		if ($callback = $this->getOption('FilterCallback')) {
+			foreach ($set as $item) {
+				if (call_user_func($callback, $item) === false) {
+					$set->remove($item);
+				}
+			}
 		}
 
 		return $set;
