@@ -6,6 +6,7 @@ class HasManyPickerField extends ItemSetField {
 
 	protected $parent;
 	protected $otherClass;
+	protected $searchField;
 
 	public static $actions = array(
 		'Search' => 'search'
@@ -20,6 +21,17 @@ class HasManyPickerField extends ItemSetField {
 		$this->otherClass = $parent->has_many($name);
 
 		parent::__construct($name, $title, $options);
+	}
+
+	/**
+	 * @return HasManyPickerField_SearchField
+	 */
+	public function getSearchField() {
+		if (!$this->searchField) {
+			$this->searchField = new ManyManyPickerField_SearchField($this);
+		}
+
+		return $this->searchField;
 	}
 
 	/**
@@ -58,7 +70,7 @@ class HasManyPickerField extends ItemSetField {
 
 		$form = new Form($this, 'ResultsForm',
 			new FieldSet(
-				$searchfield = new HasManyPickerField_SearchField($this)
+				$searchfield = $this->getSearchField()
 			),
 			new FieldSet()
 		);

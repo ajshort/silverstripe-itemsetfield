@@ -17,6 +17,10 @@ class ManyManyPickerField extends HasManyPickerField {
 		$this->otherClass = ( $parent->class == $parentClass || ClassInfo::is_subclass_of($parent->class, $parentClass)) ? $componentClass : $parentClass;
 	}
 
+	public function getSearchField() {
+		return new ManyManyPickerField_SearchField($this);
+	}
+
 	public function getItemsQuery() {
 		if ($this->getOption('Sortable')) {
 			$sort = "\"{$this->joinTable}\".\"ID\"";
@@ -25,19 +29,6 @@ class ManyManyPickerField extends HasManyPickerField {
 		}
 
 		return $this->parent->getManyManyComponentsQuery($this->name, '', $sort);
-	}
-
-	public function ResultsForm($search) {
-		if ($search instanceof SS_HTTPRequest) {
-			$search = $search->getVars();
-		}
-
-		$field = new ManyManyPickerField_SearchField($this);
-		$field->setSearchCriteria($search);
-
-		return new Form(
-			$this, 'ResultsForm', new FieldSet($field), new FieldSet()
-		);
 	}
 
 	public function saveInto(DataObject $record) {
