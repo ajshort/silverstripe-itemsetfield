@@ -9,20 +9,14 @@ class ManyManyPickerField extends HasManyPickerField {
 		'Sortable' => false
 	);
 
+	protected $searchFieldClass = 'ManyManyPickerField_SearchField';
+
 	public function __construct($parent, $name, $title=null, $options=null) {
 		parent::__construct($parent, $name, $title, $options);
 
 		list($parentClass, $componentClass, $parentField, $componentField, $table) = $parent->many_many($this->name);
 		$this->joinTable = $table;
 		$this->otherClass = ( $parent->class == $parentClass || ClassInfo::is_subclass_of($parent->class, $parentClass)) ? $componentClass : $parentClass;
-	}
-
-	public function getSearchField() {
-		if (!$this->searchField) {
-			$this->searchField = new ManyManyPickerField_SearchField($this);
-		}
-
-		return $this->searchField;
 	}
 
 	public function getItemsQuery() {

@@ -61,6 +61,11 @@ Below is a listing of options available one each class:
    would be included in the results list. If the callback returns FALSE then the
    item will not be included.
 
+### HasManyPickerField (and children HasOnePickerField and HasManyPickerField)
+*  **ShowPickedInSearch** (`bool`) - If this is TRUE, then objects that have
+   already been picked will show in search results. It is set to TRUE by
+   default.
+
 ### ManyManyPickerField
 
 *  **Sortable** (`bool`) - Either enables or disables the drag and drop ordering

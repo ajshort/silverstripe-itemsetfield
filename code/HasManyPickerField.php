@@ -4,9 +4,9 @@
  */
 class HasManyPickerField extends ItemSetField {
 
-	protected $parent;
-	protected $otherClass;
-	protected $searchField;
+	public static $default_options = array(
+		'ShowPickedInSearch' => true
+	);
 
 	public static $actions = array(
 		'Search' => 'search'
@@ -15,6 +15,11 @@ class HasManyPickerField extends ItemSetField {
 	public static $item_actions = array(
 		'Remove'
 	);
+
+	protected $parent;
+	protected $otherClass;
+	protected $searchField;
+	protected $searchFieldClass = 'ManyManyPickerField_SearchField';
 
 	public function __construct($parent, $name, $title = null, $options = null) {
 		$this->parent     = $parent;
@@ -28,7 +33,7 @@ class HasManyPickerField extends ItemSetField {
 	 */
 	public function getSearchField() {
 		if (!$this->searchField) {
-			$this->searchField = new ManyManyPickerField_SearchField($this);
+			$this->searchField = new $this->searchFieldClass($this);
 		}
 
 		return $this->searchField;
@@ -118,6 +123,22 @@ class HasManyPickerField_SearchField extends SearchItemSetField {
 	public function __construct($parent) {
 		$this->parent = $parent;
 		parent::__construct($parent->getOtherClass(), 'Results');
+	}
+
+	public function getItemsQuery() {
+		$query = parent::getItemsQuery();
+
+		if (!$this->parent->getOption('ShowPickedInSearch')) {
+			$id     = sprintf('"%s"."ID"', $this->parent->getOtherClass());
+			$ignore = $this->parent->getItemsQuery();
+			$ignore->select($id);
+
+			if ($ids = $ignore->execute()->column()) {
+				$query->where("$id NOT IN (" . implode(', ', $ids) . ')');
+			}
+		}
+
+		return $query;
 	}
 
 	public function Choose($data, $item) {
