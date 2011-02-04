@@ -1,7 +1,7 @@
 .itemsetfield { margin-bottom: 2em; }
 .itemsetfield-heading { font-size: 1.2em; font-weight: 600; }
-.itemsetfield ul { border-top: 1px solid #eee; margin-bottom: 1em; }
-.itemsetfield li { overflow: hidden; padding: 5px 3px; font-size: 11px; border-bottom: 1px solid #eee; zoom: 1; }
+.itemsetfield ul { border-top: 1px solid #eee; margin-bottom: 1em; padding: 0; }
+.itemsetfield li { overflow: hidden; padding: 5px 3px; font-size: 11px; border-bottom: 1px solid #eee; zoom: 1; margin: 0; }
 .itemsetfield-sortable li { cursor: move; }
 .itemsetfield li.odd { background: white; }
 .itemsetfield li.even { background: #F8F8F8; }
