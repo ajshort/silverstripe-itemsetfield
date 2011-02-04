@@ -18,7 +18,11 @@ class ManyManyPickerField extends HasManyPickerField {
 	}
 
 	public function getSearchField() {
-		return new ManyManyPickerField_SearchField($this);
+		if (!$this->searchField) {
+			$this->searchField = new ManyManyPickerField_SearchField($this);
+		}
+
+		return $this->searchField;
 	}
 
 	public function getItemsQuery() {
