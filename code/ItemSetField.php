@@ -68,7 +68,7 @@ abstract class ItemSetField extends FormField {
 		}
 
 		if ($callback = $this->getOption('FilterCallback')) {
-			foreach ($set as $item) {
+			if ($set) foreach ($set as $item) {
 				if (call_user_func($callback, $item) === false) {
 					$set->remove($item);
 				}
