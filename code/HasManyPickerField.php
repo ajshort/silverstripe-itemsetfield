@@ -5,7 +5,8 @@
 class HasManyPickerField extends ItemSetField {
 
 	public static $default_options = array(
-		'ShowPickedInSearch' => true
+		'ShowPickedInSearch' => true,
+		'ExtraFilter'        => false
 	);
 
 	public static $actions = array(
@@ -127,6 +128,10 @@ class HasManyPickerField_SearchField extends SearchItemSetField {
 
 	public function getItemsQuery() {
 		$query = parent::getItemsQuery();
+
+		if ($filter = $this->parent->getOption('ExtraFilter')) {
+			$query->where($filter);
+		}
 
 		if (!$this->parent->getOption('ShowPickedInSearch')) {
 			$id     = sprintf('"%s"."ID"', $this->parent->getOtherClass());

@@ -65,6 +65,8 @@ Below is a listing of options available one each class:
 *  **ShowPickedInSearch** (`bool`) - If this is TRUE, then objects that have
    already been picked will show in search results. It is set to TRUE by
    default.
+*  **ExtraFilter** (`string`) - An extra WHERE clause to filter the candidate
+   objects shown in the search popup.
 
 ### ManyManyPickerField
 
