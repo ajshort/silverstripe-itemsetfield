@@ -62,6 +62,14 @@ Below is a listing of options available one each class:
    item will not be included.
 
 ### HasManyPickerField (and children HasOnePickerField and HasManyPickerField)
+*  **Sortable** (`bool`) - Either enables or disables drag and drop ordering of
+   selected items. The order is updated when the parent object is saved. _Note_:
+   this is not available on HasOnePickerField. This defaults to `false`.
+*  **SortableField** (`string`) The database field that stores the sort order.
+   For a HasManyPickerField this is just a column on the component object,
+   whereas for ManyManyPickerField this must be a field defined in the
+   `many_many_extraFields` data for the relationship. This defaults to `Sort`,
+   and is only used if the `Sortable` option is enabled.
 *  **ShowPickedInSearch** (`bool`) - If this is TRUE, then objects that have
    already been picked will show in search results. It is set to TRUE by
    default.
@@ -70,8 +78,6 @@ Below is a listing of options available one each class:
 
 ### ManyManyPickerField
 
-*  **Sortable** (`bool`) - Either enables or disables the drag and drop ordering
-   selected items.
 *  **ExtraFields** (`string`) - This is a string which corresponds to a method
    name on the object being attached across the relationship. This method should
    return a FieldSet, containing fields which correspond to values in the

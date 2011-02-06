@@ -5,8 +5,10 @@
 class HasManyPickerField extends ItemSetField {
 
 	public static $default_options = array(
-		'ShowPickedInSearch' => true,
-		'ExtraFilter'        => false
+		'Sortable'           => false,
+		'SortableField'      => 'Sort',
+		'ExtraFilter'        => false,
+		'ShowPickedInSearch' => true
 	);
 
 	public static $actions = array(
@@ -47,12 +49,103 @@ class HasManyPickerField extends ItemSetField {
 		return $this->otherClass;
 	}
 
+	/**
+	 * Returns the table name where the sortable field is stored.
+	 *
+	 * @return string
+	 */
+	public function getSortableTable() {
+		$classes = ClassInfo::ancestry($this->getOtherClass());
+		$field   = $this->getOption('SortableField');
+
+		foreach (array_reverse($classes) as $class) {
+			if (singleton($class)->hasOwnTableDatabaseField($field)) return $class;
+		}
+
+		throw new Exception("Could not find the sort field \"$field\" on {$this->getOtherClass()}");
+	}
+
+	/**
+	 * Returns the field on the sortable table that corresponds to the child ID.
+	 *
+	 * @return string
+	 */
+	public function getSortableTableIdField() {
+		return 'ID';
+	}
+
+	/**
+	 * Returns an SQL WHERE clause that limits the results from the sortable
+	 * table to either one or many item IDs.
+	 *
+	 * @param  int|array $ids
+	 * @return string
+	 */
+	public function getSortableTableClauseForIds($ids) {
+		if (is_array($ids)) {
+			return '"ID" IN (' . implode(', ', array_map('intval', $ids)) . ')';
+		} else {
+			return '"ID" = ' . (int) $ids;
+		}
+	}
+
 	public function getItemsQuery() {
-		return $this->parent->getComponentsQuery($this->name);
+		if ($this->getOption('Sortable')) {
+			$sort = sprintf('"%s"."%s" ASC',
+				$this->getSortableTable(),
+				$this->getOption('SortableField'));
+		} else {
+			$sort = null;
+		}
+
+		return $this->parent->getComponentsQuery($this->name, null, $sort);
 	}
 
 	public function saveInto(DataObject $record) {
-		$record->{$this->name}()->setByIDList($this->value);
+		$set = $record->{$this->name}();
+		$set->setByIDList($this->value);
+
+		if (!$this->getOption('Sortable') || !count($set)) return;
+
+		$field = $this->getOption('SortableField');
+		$table = $this->getSortableTable();
+
+		// First populate the sort values on each item that doesn't have one
+		foreach ($set as $item) {
+			if ($item->$field) continue;
+
+			DB::query(sprintf(
+				'UPDATE "%s" SET "%s" = (%s) WHERE %s',
+				$table,
+				$field,
+				sprintf('SELECT MAX("%s") + 1 FROM "%s"', $field, $table),
+				$this->getSortableTableClauseForIds($item->ID)));
+		}
+
+		// Now load a list of all the possible sort values, so we don't use
+		// any duplicates.
+		$sorts = DB::query(sprintf(
+			'SELECT "%s", "%s" FROM "%s" WHERE %s',
+			$this->getSortableTableIdField(),
+			$field,
+			$table,
+			$this->getSortableTableClauseForIds($set->map('ID', 'ID'))));
+
+		$sortMap  = $sorts->map();
+		$sortVals = array_values($sortMap);
+		sort($sortVals);
+
+		// Now loop through each update and set the sort value.
+		foreach ($this->value as $k => $id) {
+			$sort = $sortVals[$k];
+
+			if ($sort != $sortMap[$id]) DB::query(sprintf(
+				'UPDATE "%s" SET "%s" = %d WHERE %s',
+				$table,
+				$field,
+				$sort,
+				$this->getSortableTableClauseForIds($id)));
+		}
 	}
 
 	public function SearchForm() {

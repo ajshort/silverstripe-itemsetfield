@@ -5,39 +5,53 @@
  */
 class ManyManyPickerField extends HasManyPickerField {
 
-	public static $default_options = array(
-		'Sortable' => false
-	);
-
 	protected $searchFieldClass = 'ManyManyPickerField_SearchField';
+
+	protected $parentField;
+	protected $componentField;
+	protected $joinTable;
 
 	public function __construct($parent, $name, $title=null, $options=null) {
 		parent::__construct($parent, $name, $title, $options);
 
 		list($parentClass, $componentClass, $parentField, $componentField, $table) = $parent->many_many($this->name);
+
+		$this->parentField = $parentField;
+		$this->componentField = $componentField;
 		$this->joinTable = $table;
 		$this->otherClass = ( $parent->class == $parentClass || ClassInfo::is_subclass_of($parent->class, $parentClass)) ? $componentClass : $parentClass;
 	}
 
+	public function getSortableTable() {
+		return $this->joinTable;
+	}
+
+	public function getSortableTableIdField() {
+		return $this->componentField;
+	}
+
+	public function getSortableTableClauseForIds($ids) {
+		$field = $this->componentField;
+
+		if (is_array($ids)) {
+			$filter = "\"$field\" IN (" . implode(', ', array_map('intval', $ids)) . ')';
+		} else {
+			$filter = sprintf('"%s" = %d', $field, $ids);
+		}
+
+		return "$filter AND {$this->parentField} = {$this->parent->ID}";
+	}
+
 	public function getItemsQuery() {
 		if ($this->getOption('Sortable')) {
-			$sort = "\"{$this->joinTable}\".\"ID\"";
+			$sort = sprintf('"%s"."%s" ASC',
+				$this->getSortableTable(),
+				$this->getOption('SortableField'));
 		} else {
 			$sort = null;
 		}
 
-		return $this->parent->getManyManyComponentsQuery($this->name, '', $sort);
-	}
-
-	public function saveInto(DataObject $record) {
-		if ($this->value && $this->getOption('Sortable')) {
-			$set = $record->{$this->name}();
-
-			$set->removeAll();
-			$set->addMany($this->value);
-		} else {
-			parent::saveInto($record);
-		}
+		return $this->parent->getManyManyComponentsQuery($this->name, null, $sort);
 	}
 
 }
