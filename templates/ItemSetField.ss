@@ -4,7 +4,7 @@
 <% require css(sapphire/thirdparty/jquery-ui-themes/smoothness/jquery-ui-1.8rc3.custom.css) %>
 <% require css(itemsetfield/css/ItemSetField.css) %>
 
-<div id="$ID" class="itemsetfield <% if Option(Sortable) %>itemsetfield-sortable<% end_if %>" rel="$Link">
+<div$Attributes>
 	<p class="itemsetfield-heading">$Title</p>
 
 	<ul class="itemsetfield-items">

@@ -53,8 +53,8 @@ var dialogFor = function(element, title) {
 				autoOpen:  false,
 				title:     title,
 				modal:     true,
-				width:     400,
-				height:    600,
+				width:     parseInt(field.attr("data-popup-width")),
+				height:    parseInt(field.attr("data-popup-height")),
 				draggable: true,
 				resizable: false
 			});

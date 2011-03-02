@@ -12,7 +12,9 @@ abstract class ItemSetField extends FormField {
 	public static $default_options = array(
 		'Pageable'       => true,
 		'ItemsPerPage'   => 15,
-		'FilterCallback' => false
+		'FilterCallback' => false,
+		'PopupWidth'     => 400,
+		'PopupHeight'    => 600
 	);
 
 	static $url_handlers = array(
@@ -212,6 +214,32 @@ abstract class ItemSetField extends FormField {
 
 		if ($item) return $this->ItemForm($item);
 	}
+
+	/**
+	 * @return string
+	 */
+	public function Attributes() {
+		$attribs = array();
+		$result  = '';
+
+		$attribs['id']    = $this->id();
+		$attribs['class'] = 'itemsetfield';
+		$attribs['rel']   = $this->Link();
+
+		$attribs['data-popup-width']  = $this->getOption('PopupWidth');
+		$attribs['data-popup-height'] = $this->getOption('PopupHeight');
+
+		if ($this->getOption('Sortable')) {
+			$attribs['class'] .= ' itemsetfield-sortable';
+		}
+
+		foreach ($attribs as $name => $val) {
+			$result .= sprintf(' %s="%s"', $name, Convert::raw2att($val));
+		}
+
+		return $result;
+	}
+
 }
 
 class ItemSetField_Action extends ViewableData {

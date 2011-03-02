@@ -60,6 +60,8 @@ Below is a listing of options available one each class:
 *  **FilterCallback** (`callback`) - A callback that is passed each object that
    would be included in the results list. If the callback returns FALSE then the
    item will not be included.
+*  **PopupWidth** and **PopupHeight** (`int`) - These options control the size
+   of any popup dialogs spawned from the field. This defaults to 600x400.
 
 ### HasManyPickerField (and children HasOnePickerField and HasManyPickerField)
 *  **Sortable** (`bool`) - Either enables or disables drag and drop ordering of
