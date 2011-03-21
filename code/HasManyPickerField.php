@@ -114,11 +114,14 @@ class HasManyPickerField extends ItemSetField {
 		foreach ($set as $item) {
 			if ($item->$field) continue;
 
+			$max = DB::query(sprintf('SELECT MAX("%s") + 1 FROM "%s"', $field, $table));
+			$max = $max->value();
+
 			DB::query(sprintf(
-				'UPDATE "%s" SET "%s" = (%s) WHERE %s',
+				'UPDATE "%s" SET "%s" = %d WHERE %s',
 				$table,
 				$field,
-				sprintf('SELECT MAX("%s") + 1 FROM "%s"', $field, $table),
+				$max,
 				$this->getSortableTableClauseForIds($item->ID)));
 		}
 
