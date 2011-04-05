@@ -15,10 +15,6 @@ class HasManyPickerField extends ItemSetField {
 		'Search' => 'search'
 	);
 
-	public static $item_actions = array(
-		'Remove'
-	);
-
 	protected $parent;
 	protected $otherClass;
 	protected $searchField;
@@ -99,6 +95,14 @@ class HasManyPickerField extends ItemSetField {
 		}
 
 		return $this->parent->getComponentsQuery($this->name, null, $sort);
+	}
+
+	public function ItemActions($item) {
+		$actions = parent::ItemActions($item);
+		$actions->push(new ItemSetField_Action(
+			$this, 'Remove', 'Remove'
+		));
+		return $actions;
 	}
 
 	public function saveInto(DataObject $record) {

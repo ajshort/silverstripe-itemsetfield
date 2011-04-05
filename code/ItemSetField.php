@@ -4,9 +4,6 @@ abstract class ItemSetField extends FormField {
 
 	/* Actions that can be on the set as a whole */
 	static $actions = array();
-
-	/* Actions that can be performed per-item. For more programatic calculation, override ItemActions, which is always called rather than accessing this directly */
-	static $item_actions = array();
 	static $item_default_action = null;
 
 	public static $default_options = array(
@@ -117,11 +114,13 @@ abstract class ItemSetField extends FormField {
 		return 0;
 	}
 
-	/** The actions peformable on a given item. By default uses the static variable item_actions */
-	function ItemActions($item) {
-		$actions = new DataObjectSet();
-		foreach ($this->stat('item_actions') as $name) $actions->push(new ItemSetField_Action($this, $name, $name));
-		return $actions;
+	/**
+	 * Returns a set of the actions performable on individual items.
+	 *
+	 * @return DataObjectSet
+	 */
+	public function ItemActions($item) {
+		return new DataObjectSet();
 	}
 
 	/** The default action when clicking on an item. By default uses the static variable item_default_action */
@@ -144,7 +143,13 @@ abstract class ItemSetField extends FormField {
 
 	function ItemForm($item) {
 		$class = $this->ItemClass();
-		return new $class($this, $item, $this->ItemFields($item), $this->ItemActions($item), $this->ItemDefaultAction($item));
+
+		return new $class(
+			$this,
+			$item,
+			$this->ItemFields($item),
+			$this->ItemActions($item),
+			$this->ItemDefaultAction($item));
 	}
 
 	/**
