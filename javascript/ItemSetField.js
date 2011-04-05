@@ -19,10 +19,10 @@ var request = function(element, title, params, callback) {
 				}
 
 				field.replaceWith(el);
-			}
-			// Otherwise spawn a dialog
-			else {
-				dialogFor(element, title).empty().append(el).dialog('open');
+			} else {
+				var dialog = dialogFor(element, title);
+				dialog.empty().append(el).dialog('open');
+				dialog.find("form").submit(formHandler);
 			}
 		},
 		error: function() {
@@ -66,6 +66,30 @@ var dialogFor = function(element, title) {
 	return dialog;
 }
 
+/**
+ * Handles the submission of a form in an item set field dialog.
+ */
+var formHandler = function() {
+	var form    = $(this);
+	var actions = $('input.action', form).eq(0);
+	var text    = actions.text();
+
+	actions.val(ss.i18n._t('ItemSetField.LOADING', 'Loading...'));
+	actions.attr('disabled', true);
+
+	var params = {
+		data: form.serialize(),
+		url:  form.attr('action'),
+		type: form.attr('method') || 'GET'
+	};
+
+	request(form, text, params, function() {
+		actions.text(text).removeAttr('disabled');
+	});
+
+	return false;
+};
+
 $('.itemsetfield-sortable').live('hover', function() {
 	$('.itemsetfield-items', this).sortable({
 		axis: 'y',
@@ -93,27 +117,6 @@ $('a.itemsetfield-action').live('click', function() {
 
 	request(link, text, { url: $(this).attr('href') }, function() {
 		link.text(text).removeClass('ui-state-disabled');
-	});
-
-	return false;
-});
-
-$('.itemsetfield-dialog form').live('submit', function() {
-	var form    = $(this);
-	var actions = $('input.action', form).eq(0);
-	var text    = actions.text();
-
-	actions.val(ss.i18n._t('ItemSetField.LOADING', 'Loading...'));
-	actions.attr('disabled', true);
-
-	var params = {
-		data: form.serialize(),
-		url:  form.attr('action'),
-		type: form.attr('method') || 'GET'
-	};
-
-	request(form, text, params, function() {
-		actions.text(text).removeAttr('disabled');
 	});
 
 	return false;
