@@ -248,12 +248,19 @@ abstract class ItemSetField extends FormField {
 }
 
 class ItemSetField_Action extends ViewableData {
-	function __construct($itemSet, $action, $name) {
+
+	protected $itemSet;
+	protected $action;
+	protected $name;
+	protected $confirmed;
+
+	function __construct($itemSet, $action, $name, $confirmed = false) {
 		parent::__construct();
 
 		$this->itemSet = $itemSet;
 		$this->action = $action;
 		$this->name = $name;
+		$this->confirmed = $confirmed;
 	}
 
 	function setID($id) {
@@ -266,6 +273,10 @@ class ItemSetField_Action extends ViewableData {
 
 	function Link() {
 		return Controller::join_links($this->itemSet->Link(), 'item', $this->ID, $this->action);
+	}
+
+	public function Confirmed() {
+		return $this->confirmed;
 	}
 
 }

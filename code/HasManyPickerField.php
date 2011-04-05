@@ -100,7 +100,7 @@ class HasManyPickerField extends ItemSetField {
 	public function ItemActions($item) {
 		$actions = parent::ItemActions($item);
 		$actions->push(new ItemSetField_Action(
-			$this, 'Remove', 'Remove'
+			$this, 'Remove', 'Remove', true
 		));
 		return $actions;
 	}

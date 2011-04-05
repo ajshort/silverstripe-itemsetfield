@@ -82,6 +82,12 @@ $('a.itemsetfield-action').live('click', function() {
 		return false;
 	}
 
+	if (link.hasClass("ss-itemsetfield-confirmed")) {
+		if (!confirm(ss.i18n._t("ItemSetField.AREYOUSURE", "Are you sure?"))) {
+			return false;
+		}
+	}
+	
 	link.text(ss.i18n._t('ItemSetField.LOADING', 'Loading...'));
 	link.addClass('ui-state-disabled');
 
