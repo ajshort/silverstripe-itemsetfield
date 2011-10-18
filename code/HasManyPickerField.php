@@ -26,11 +26,16 @@ class HasManyPickerField extends ItemSetField {
 	public function __construct($parent, $name, $title = null, $options = null) {
 		$this->parent     = $parent;
 		$this->otherClass = $parent->has_many($name);
-
 		parent::__construct($name, $title, $options);
+	}
 
-		if($this->options['ManagePicked']) self::$actions['Edit'] = 'New';
-		if(!$this->options['Searchable']) unset(self::$actions['Search']);
+	function Actions() {
+		$actions = parent::Actions();
+
+		if($this->options['ManagePicked']) $actions->push(new ArrayData(array('Name' => 'New', 'Link' => Controller::join_links($this->Link(), 'Edit'))));
+		if(!$this->options['Searchable']) $actions->remove($actions->find('Name', 'Search'));
+
+		return $actions;
 	}
 
 	/**
