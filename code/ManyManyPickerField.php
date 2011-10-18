@@ -54,6 +54,38 @@ class ManyManyPickerField extends HasManyPickerField {
 		return $this->parent->getManyManyComponentsQuery($this->name, null, $sort);
 	}
 
+	public function UpdateForm($otherObject = null) {
+		if($otherObject instanceof SS_HTTPRequest) $otherObject = DataObject::get_by_id($this->otherClass, (int)$otherObject->param('ItemID'));
+		if(!$otherObject) $otherObject = singleton($this->otherClass);
+
+		$fields = $otherObject->hasMethod('getCMSFields_forPopup') ? $otherObject->getCMSFields_forPopup() : $otherObject->scaffoldFormFields(array('ajaxSafe' => true));
+
+		$fields->push(new HiddenField('ItemID', 'ItemID' , $otherObject->ID));
+
+		$form = new Form($this, 'UpdateForm',
+			$fields,
+			new FieldSet(
+				new FormAction('Update', _t('MemberTableField.EDIT', 'Save')),
+				new ResetFormAction('ClearEdit', _t('ModelAdmin.CLEAR_EDIT','Clear Form'))
+			)
+		);
+		$form->setFormMethod('get');
+
+		return $form;
+	}
+
+	function Update($data,$form) {
+		$otherObject = DataObject::get_by_id($this->otherClass, (int)$data['ItemID']);
+		if(!$otherObject) $otherObject = new $this->otherClass();
+		$form->saveInto($otherObject);
+		$otherObject->write();
+
+		$assoc = $this->name;
+		$this->parent->$assoc()->add($otherObject);
+
+		return Director::is_ajax() ? $this->FieldHolder() : Director::redirectBack();
+	}
+
 }
 
 class ManyManyPickerField_SearchField extends HasManyPickerField_SearchField {

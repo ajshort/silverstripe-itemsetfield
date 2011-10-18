@@ -201,7 +201,7 @@ abstract class ItemSetField extends FormField {
 		$actions = new DataObjectSet();
 		foreach ($this->stat('actions') as $k => $v) {
 			if (is_numeric($k)) $actions->push(new ArrayData(array('Name' => $v, 'Link' => Controller::join_links($this->Link(), $v))));
-			else                $actions->push(new ArrayData(array('Name' => $k, 'Link' => Controller::join_links($this->Link(), $k), 'ExtraClass' => $v)));
+			else                $actions->push(new ArrayData(array('Name' => $v, 'Link' => Controller::join_links($this->Link(), $k), 'ExtraClass' => $v)));
 		}
 
 		return $actions;

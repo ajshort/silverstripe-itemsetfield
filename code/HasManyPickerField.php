@@ -8,11 +8,14 @@ class HasManyPickerField extends ItemSetField {
 		'Sortable'           => false,
 		'SortableField'      => 'Sort',
 		'ExtraFilter'        => false,
-		'ShowPickedInSearch' => true
+		'ShowPickedInSearch' => true,
+		'ManagePicked'       => false,
+		'DeleteRemoved'      => false,
+		'Searchable'         => true,
 	);
 
 	public static $actions = array(
-		'Search' => 'search'
+		'Search' => 'Search'
 	);
 
 	protected $parent;
@@ -23,8 +26,16 @@ class HasManyPickerField extends ItemSetField {
 	public function __construct($parent, $name, $title = null, $options = null) {
 		$this->parent     = $parent;
 		$this->otherClass = $parent->has_many($name);
-
 		parent::__construct($name, $title, $options);
+	}
+
+	function Actions() {
+		$actions = parent::Actions();
+
+		if($this->options['ManagePicked']) $actions->push(new ArrayData(array('Name' => 'New', 'Link' => Controller::join_links($this->Link(), 'Edit'))));
+		if(!$this->options['Searchable']) $actions->remove($actions->find('Name', 'Search'));
+
+		return $actions;
 	}
 
 	/**
@@ -99,9 +110,9 @@ class HasManyPickerField extends ItemSetField {
 
 	public function ItemActions($item) {
 		$actions = parent::ItemActions($item);
-		$actions->push(new ItemSetField_Action(
-			$this, 'Remove', 'Remove', true
-		));
+		if($this->options['ManagePicked']) $actions->push(new ItemSetField_Action($this, 'Edit', 'Edit'));
+		$removelable = $this->options['ManagePicked'] && $this->options['DeleteRemoved'] ? 'Delete' : 'Remove';
+		$actions->push(new ItemSetField_Action($this, 'Remove', $removelable, true));
 		return $actions;
 	}
 
@@ -185,6 +196,64 @@ class HasManyPickerField extends ItemSetField {
 		return $form;
 	}
 
+	public function UpdateForm($otherObject = null) {
+		if($otherObject instanceof SS_HTTPRequest) $otherObject = DataObject::get_by_id($this->otherClass, (int)$otherObject->param('ItemID'));
+		if(!$otherObject) $otherObject = singleton($this->otherClass);
+		$validator = $otherObject->hasMethod('getCMSValidator') ? $otherObject->getCMSValidator() : new RequiredFields();
+
+		$fields = $otherObject->hasMethod('getCMSFields_forPopup') ? $otherObject->getCMSFields_forPopup() : $otherObject->scaffoldFormFields(array('ajaxSafe' => true));
+
+		// set association on has_one / has_many item
+		$remotejoinfield = $this->parent->getRemoteJoinField($this->name);
+		$fields->replaceField($remotejoinfield, new HiddenField($remotejoinfield, $remotejoinfield, $this->parent->ID));
+		$fields->push(new HiddenField('ItemID', 'ItemID' , $otherObject->ID));
+
+		$form = new Form($this, 'UpdateForm',
+			$fields,
+			new FieldSet(
+				new FormAction('Update', _t('MemberTableField.EDIT', 'Save')),
+				new ResetFormAction('ClearEdit', _t('ModelAdmin.CLEAR_EDIT','Clear Form'))
+			),
+			$validator
+		);
+		$form->setFormMethod('get');
+
+		return $form;
+	}
+
+	function Update($data,$form) {
+		$otherObject = DataObject::get_by_id($this->otherClass, (int)$data['ItemID']);
+		if(!$otherObject) $otherObject = new $this->otherClass();
+		$form->saveInto($otherObject);
+		$otherObject->write();
+		if($this instanceof ManyManyPickerField) {
+			$assoc = $this->name;
+			$this->parent->$assoc()->add($otherObject);
+		} else if($this instanceof HasOnePickerField) {
+			$assoc = $this->name . 'ID';
+			if($this->options['ManagePicked'] && $this->options['DeleteRemoved'] && $this->parent->$assoc = $otherObject->ID) {
+				$old = DataObject::get_by_id($this->otherClass, (int)$this->parent->$assoc);
+				if($old) $old->delete();
+			}
+			$this->parent->$assoc = $otherObject->ID;
+			$this->parent->write();
+		}
+
+		return Director::is_ajax() ? $this->FieldHolder() : Director::redirectBack();
+	}
+
+	public function Edit($otherObject) {
+		if($otherObject instanceof SS_HTTPRequest) $otherObject = DataObject::get_by_id($this->otherClass, (int)$otherObject->param('ItemID'));
+		if(!$otherObject) $otherObject = singleton($this->otherClass);
+
+		$form = $this->UpdateForm($otherObject);
+		$form->loadDataFrom($otherObject);
+
+		return $this->customise(array(
+			'Form' => $form,
+		))->renderWith('HasManyPickerField_Edit');
+	}
+
 	public function Search($searchCriteria) {
 		if($searchCriteria instanceof SS_HTTPRequest) $searchCriteria = $searchCriteria->getVars();
 
@@ -208,9 +277,14 @@ class HasManyPickerField extends ItemSetField {
 	}
 
 	public function Remove($data, $item) {
-		$accessor = $this->name;
-		$this->parent->$accessor()->remove($item);
-		$this->parent->write();
+
+		if($this->options['ManagePicked'] && $this->options['DeleteRemoved']) {
+			$item->delete();
+		} else {
+			$accessor = $this->name;
+			$this->parent->$accessor()->remove($item);
+			$this->parent->write();
+		}
 
 		return Director::is_ajax() ? $this->FieldHolder() : Director::redirectBack();
 	}
