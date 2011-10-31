@@ -11,6 +11,9 @@ class HasManyPickerField extends ItemSetField {
 		'ExtraFilter'        => false,
 		'ShowPickedInSearch' => true,
 		'AllowCreate'        => false,
+		'AllowEdit'          => false,
+		'AllowRemove'        => true,
+		'AllowDelete'        => false,
 		'FieldsMethod'       => 'getFrontEndFields',
 		'ValidatorMethod'    => 'getValidator'
 	);
@@ -120,9 +123,17 @@ class HasManyPickerField extends ItemSetField {
 
 	public function ItemActions($item) {
 		$actions = parent::ItemActions($item);
+
+		if ($this->getOption('AllowEdit') && $item->canEdit()) {
+			$actions->push(new ItemSetField_Action(
+				$this, 'Edit', 'Edit'
+			));
+		}
+
 		$actions->push(new ItemSetField_Action(
 			$this, 'Remove', 'Remove', true
 		));
+
 		return $actions;
 	}
 
@@ -232,6 +243,8 @@ class HasManyPickerField extends ItemSetField {
 		$validator = $sng->hasMethod($validator) ? $sng->$validator() : new RequiredFields();
 		$validator->setJavascriptValidationHandler('none');
 
+		$fields->removeByName($this->parent->getRemoteJoinField($this->name));
+
 		$actions = new FieldSet(
 			new FormAction('doCreate', _t('ItemSetField.CREATE', 'Create'))
 		);
@@ -253,10 +266,10 @@ class HasManyPickerField extends ItemSetField {
 			$this->Add($data, $record);
 		} catch (ValidationException $e) {
 			$form->sessionMessage($e->getResult()->message(), 'bad');
-			return $this->isAjax() ? $form->forTemplate() : $this->redirectBack();
+			return Director::is_ajax() ? $form->forTemplate() : Director::redirectBack();
 		}
 
-		return $this->isAjax() ? $this->FieldHolder() : $this->redirectBack();
+		return Director::is_ajax() ? $this->FieldHolder() : Director::redirectBack();
 	}
 
 	public function Add($data, $item) {
@@ -271,6 +284,57 @@ class HasManyPickerField extends ItemSetField {
 		$accessor = $this->name;
 		$this->parent->$accessor()->remove($item);
 		$this->parent->write();
+
+		return Director::is_ajax() ? $this->FieldHolder() : Director::redirectBack();
+	}
+
+	public function Edit($data, $item) {
+		$form = $this->EditForm($item);
+
+		$form->loadDataFrom($item);
+		$form->Fields()->push(new HiddenField('ItemID', null, $item->ID));
+
+		return $form->forTemplate();
+	}
+
+	public function EditForm() {
+		$item      = singleton($this->getOtherClass());
+		$fields    = $item->{$this->getOption('FieldsMethod')}();
+		$validator = $this->getOption('ValidatorMethod');
+
+		$validator = $item->hasMethod($validator) ? $item->$validator() : new RequiredFields();
+		$validator->setJavascriptValidationHandler('none');
+
+		$fields->removeByName($this->parent->getRemoteJoinField($this->name));
+
+		$actions = new FieldSet(
+			new FormAction('doEdit', _t('ItemSetField.SAVE', 'Save'))
+		);
+
+		return new Form($this, 'EditForm', $fields, $actions, $validator);
+	}
+
+	public function doEdit($data, $form) {
+		$id   = (int) $data['ItemID'];
+		$item = DataObject::get_by_id($this->getOtherClass(), $id);
+
+		if (!$item) {
+			$this->httpError(404);
+		}
+
+		if (!$item->canEdit()) {
+			$this->httpError(403);
+		}
+
+		try {
+			$form->saveInto($item);
+			$item->write();
+		} catch (ValidationException $e) {
+			$form->sessionMessage($e->getResult()->message(), 'bad');
+			$form->Fields()->push(new HiddenField('ItemID', null, $id));
+
+			return Director::is_ajax() ? $form->forTemplate() : Director::redirectBack();
+		}
 
 		return Director::is_ajax() ? $this->FieldHolder() : Director::redirectBack();
 	}
