@@ -2,8 +2,6 @@
 
 abstract class ItemSetField extends FormField {
 
-	/* Actions that can be on the set as a whole */
-	static $actions = array();
 	static $item_default_action = null;
 
 	public static $default_options = array(
@@ -197,14 +195,8 @@ abstract class ItemSetField extends FormField {
 		return $this->renderWith($templates);
 	}
 
-	function Actions() {
-		$actions = new DataObjectSet();
-		foreach ($this->stat('actions') as $k => $v) {
-			if (is_numeric($k)) $actions->push(new ArrayData(array('Name' => $v, 'Link' => Controller::join_links($this->Link(), $v))));
-			else                $actions->push(new ArrayData(array('Name' => $k, 'Link' => Controller::join_links($this->Link(), $k), 'ExtraClass' => $v)));
-		}
-
-		return $actions;
+	public function Actions() {
+		return new DataObjectSet();
 	}
 
 	function handleItem($req) {

@@ -11,10 +11,6 @@ class HasManyPickerField extends ItemSetField {
 		'ShowPickedInSearch' => true
 	);
 
-	public static $actions = array(
-		'Search' => 'search'
-	);
-
 	protected $parent;
 	protected $otherClass;
 	protected $searchField;
@@ -95,6 +91,18 @@ class HasManyPickerField extends ItemSetField {
 		}
 
 		return $this->parent->getComponentsQuery($this->name, null, $sort);
+	}
+
+	public function Actions() {
+		$actions = parent::Actions();
+
+		$actions->push(new ArrayData(array(
+			'Name'       => 'Search',
+			'Link'       => Controller::join_links($this->Link(), 'Search'),
+			'ExtraClass' => 'search'
+		)));
+
+		return $actions;
 	}
 
 	public function ItemActions($item) {
