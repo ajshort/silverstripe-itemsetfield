@@ -79,6 +79,13 @@ Below is a listing of options available one each class:
    default.
 *  **ExtraFilter** (`string`) - An extra WHERE clause to filter the candidate
    objects shown in the search popup.
+*  **AllowCreate** (`bool`) - Controls whether new items can be created with
+   this field. Defaults to FALSE.
+*  **FieldsMethod** (`string`) - The method name on the object being managed
+   which is called to a return a `FieldSet` used to manage the object. This
+   defaults to `getFrontEndFields` so that the tabbed interface is not loaded.
+*  **ValidatorMethod** (`string`) - The method name which returns a validator
+   used in the create and edit forms. Defaults to `getValidator`.
 
 ### ManyManyPickerField
 

@@ -9,7 +9,10 @@ class HasManyPickerField extends ItemSetField {
 		'Sortable'           => false,
 		'SortableField'      => 'Sort',
 		'ExtraFilter'        => false,
-		'ShowPickedInSearch' => true
+		'ShowPickedInSearch' => true,
+		'AllowCreate'        => false,
+		'FieldsMethod'       => 'getFrontEndFields',
+		'ValidatorMethod'    => 'getValidator'
 	);
 
 	protected $parent;
@@ -96,6 +99,13 @@ class HasManyPickerField extends ItemSetField {
 
 	public function Actions() {
 		$actions = parent::Actions();
+
+		if ($this->getOption('AllowCreate') && singleton($this->getOtherClass())->canCreate()) {
+			$actions->push(new ArrayData(array(
+				'Name' => 'Create',
+				'Link' => Controller::join_links($this->Link(), 'CreateNew')
+			)));
+		}
 
 		if ($this->getOption('Searchable')) {
 			$actions->push(new ArrayData(array(
@@ -208,6 +218,45 @@ class HasManyPickerField extends ItemSetField {
 			'Form' => $form,
 			'Results' => $resform
 		))->renderWith('HasManyPickerField_Search');
+	}
+
+	public function CreateNew() {
+		return $this->CreateForm()->forTemplate();
+	}
+
+	public function CreateForm() {
+		$sng       = singleton($this->getOtherClass());
+		$fields    = $sng->{$this->getOption('FieldsMethod')}();
+		$validator = $this->getOption('ValidatorMethod');
+
+		$validator = $sng->hasMethod($validator) ? $sng->$validator() : new RequiredFields();
+		$validator->setJavascriptValidationHandler('none');
+
+		$actions = new FieldSet(
+			new FormAction('doCreate', _t('ItemSetField.CREATE', 'Create'))
+		);
+
+		return new Form($this, 'CreateForm', $fields, $actions, $validator);
+	}
+
+	public function doCreate($data, $form) {
+		if (!singleton($this->getOtherClass())->canCreate()) {
+			$this->httpError(403);
+		}
+
+		$class  = $this->getOtherClass();
+		$record = new $class;
+		$form->saveInto($record);
+
+		try {
+			$record->write();
+			$this->Add($data, $record);
+		} catch (ValidationException $e) {
+			$form->sessionMessage($e->getResult()->message(), 'bad');
+			return $this->isAjax() ? $form->forTemplate() : $this->redirectBack();
+		}
+
+		return $this->isAjax() ? $this->FieldHolder() : $this->redirectBack();
 	}
 
 	public function Add($data, $item) {
