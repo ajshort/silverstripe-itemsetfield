@@ -83,6 +83,8 @@ Below is a listing of options available one each class:
    this field. Defaults to FALSE.
 *  **AllowEdit** (`bool`) - Allow selected objects to be edited. Defaults to
    FALSE.
+*  **AllowRemove** (`bool`) - Allow objects to be removed from the relationship
+   without being deleted. Defaults to TRUE.
 *  **FieldsMethod** (`string`) - The method name on the object being managed
    which is called to a return a `FieldSet` used to manage the object. This
    defaults to `getFrontEndFields` so that the tabbed interface is not loaded.

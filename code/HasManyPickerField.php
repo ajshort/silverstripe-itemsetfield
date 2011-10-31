@@ -130,9 +130,11 @@ class HasManyPickerField extends ItemSetField {
 			));
 		}
 
-		$actions->push(new ItemSetField_Action(
-			$this, 'Remove', 'Remove', true
-		));
+		if ($this->getOption('AllowRemove')) {
+			$actions->push(new ItemSetField_Action(
+				$this, 'Remove', 'Remove', true
+			));
+		}
 
 		return $actions;
 	}
