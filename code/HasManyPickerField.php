@@ -5,6 +5,7 @@
 class HasManyPickerField extends ItemSetField {
 
 	public static $default_options = array(
+		'Searchable'         => true,
 		'Sortable'           => false,
 		'SortableField'      => 'Sort',
 		'ExtraFilter'        => false,
@@ -96,11 +97,13 @@ class HasManyPickerField extends ItemSetField {
 	public function Actions() {
 		$actions = parent::Actions();
 
-		$actions->push(new ArrayData(array(
-			'Name'       => 'Search',
-			'Link'       => Controller::join_links($this->Link(), 'Search'),
-			'ExtraClass' => 'search'
-		)));
+		if ($this->getOption('Searchable')) {
+			$actions->push(new ArrayData(array(
+				'Name'       => 'Search',
+				'Link'       => Controller::join_links($this->Link(), 'Search'),
+				'ExtraClass' => 'search'
+			)));
+		}
 
 		return $actions;
 	}

@@ -64,6 +64,8 @@ Below is a listing of options available one each class:
    of any popup dialogs spawned from the field. This defaults to 600x400.
 
 ### HasManyPickerField (and children HasOnePickerField and HasManyPickerField)
+*  **Searchable** (`bool`) - This can be set to false to disable searching
+   through existing items.
 *  **Sortable** (`bool`) - Either enables or disables drag and drop ordering of
    selected items. The order is updated when the parent object is saved. _Note_:
    this is not available on HasOnePickerField. This defaults to `false`.
