@@ -85,6 +85,8 @@ Below is a listing of options available one each class:
    FALSE.
 *  **AllowRemove** (`bool`) - Allow objects to be removed from the relationship
    without being deleted. Defaults to TRUE.
+*  **AllowDelete** (`bool`) - Allow objects to be deleted, which also removes
+   them from the relationship. Defaults to FALSE.
 *  **FieldsMethod** (`string`) - The method name on the object being managed
    which is called to a return a `FieldSet` used to manage the object. This
    defaults to `getFrontEndFields` so that the tabbed interface is not loaded.

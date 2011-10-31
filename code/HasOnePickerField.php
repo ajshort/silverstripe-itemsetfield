@@ -29,6 +29,18 @@ class HasOnePickerField extends HasManyPickerField {
 		return Director::is_ajax() ? $this->FieldHolder() : Director::redirectBack();
 	}
 
+	public function Delete($data, $item) {
+		if (!$item->canDelete()) {
+			$this->httpError(403);
+		}
+
+		$this->parent->{$this->name . 'ID'} = null;
+		$this->parent->write();
+		$item->delete();
+
+		return Director::is_ajax() ? $this->FieldHolder() : Director::redirectBack();
+	}
+
 	public function Items() {
 		if ($item = $this->parent->{$this->name . 'ID'}) {
 			return new DataObjectSet(array(

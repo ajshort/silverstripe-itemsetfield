@@ -136,6 +136,12 @@ class HasManyPickerField extends ItemSetField {
 			));
 		}
 
+		if ($this->getOption('AllowDelete') && $item->canDelete()) {
+			$actions->push(new ItemSetField_Action(
+				$this, 'Delete', 'Delete', true
+			));
+		}
+
 		return $actions;
 	}
 
@@ -286,6 +292,17 @@ class HasManyPickerField extends ItemSetField {
 		$accessor = $this->name;
 		$this->parent->$accessor()->remove($item);
 		$this->parent->write();
+
+		return Director::is_ajax() ? $this->FieldHolder() : Director::redirectBack();
+	}
+
+	public function Delete($data, $item) {
+		if (!$item->canDelete()) {
+			$this->httpError(403);
+		}
+
+		$this->parent->{$this->name}()->remove($item);
+		$item->delete();
 
 		return Director::is_ajax() ? $this->FieldHolder() : Director::redirectBack();
 	}
