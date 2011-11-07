@@ -16,6 +16,10 @@ var request = function(element, title, params, callback) {
 
 				if (field.data('itemsetfield-dialog')) {
 					field.data('itemsetfield-dialog').dialog('close');
+				} else {
+					//We have a Results list, prevent selection of
+					//the newly returned element (replacing itself)
+					field = $('fieldset #' + el.attr('id'));
 				}
 
 				field.replaceWith(el);
