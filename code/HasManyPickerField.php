@@ -151,9 +151,10 @@ class HasManyPickerField extends ItemSetField {
 
 	public function saveInto(DataObject $record) {
 		$set = $record->{$this->name}();
-		$set->setByIDList($this->value);
 
-		if (!$this->getOption('Sortable') || !count($set)) return;
+		if (!$this->getOption('Sortable') || !count($set)) {
+			return;
+		}
 
 		$field = $this->getOption('SortableField');
 		$table = $this->getSortableTable();
