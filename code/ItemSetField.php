@@ -206,6 +206,7 @@ abstract class ItemSetField extends FormField {
 		}
 		// Come from remove request
 		else {
+			$this->setOption('Pageable', false);//get full set, not just first page
 			$item = $this->Items()->find('ID', $req->param('ItemID'));
 		}
 
