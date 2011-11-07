@@ -100,6 +100,10 @@ class HasManyPickerField extends ItemSetField {
 		return $this->parent->getComponentsQuery($this->name, null, $sort);
 	}
 
+	public function getItemById($id) {
+		return DataObject::get_by_id($this->getOtherClass(), $id);
+	}
+
 	public function Actions() {
 		$actions = parent::Actions();
 

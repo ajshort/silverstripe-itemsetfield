@@ -20,4 +20,8 @@ class SearchItemSetField extends ItemSetField {
 		return $context->getQuery($this->searchCriteria);
 	}
 
+	public function getItemById($id) {
+		return DataObject::get_by_id($this->searchClass, $id);
+	}
+
 }

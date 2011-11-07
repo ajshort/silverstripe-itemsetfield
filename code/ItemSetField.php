@@ -92,6 +92,14 @@ abstract class ItemSetField extends FormField {
 	}
 
 	/**
+	 * Retrieves an individual data record from the set by ID.
+	 *
+	 * @param  int $id
+	 * @return DataObject
+	 */
+	abstract public function getItemById($id);
+
+	/**
 	 * @return int
 	 */
 	public function getPaginationStart() {
@@ -199,17 +207,10 @@ abstract class ItemSetField extends FormField {
 		return new DataObjectSet();
 	}
 
-	function handleItem($req) {
-		// Comes from search and add request
-		if($this->searchClass) {
-			$item = DataObject::get_by_id($this->searchClass, $req->param('ItemID'));
+	public function handleItem($req) {
+		if ($item = $this->getItemById($req->param('ItemID'))) {
+			return $this->ItemForm($item);
 		}
-		// Come from remove request
-		else {
-			$item = $this->Items()->find('ID', $req->param('ItemID'));
-		}
-
-		if ($item) return $this->ItemForm($item);
 	}
 
 	/**
