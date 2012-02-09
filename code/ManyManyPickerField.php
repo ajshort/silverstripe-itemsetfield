@@ -14,12 +14,29 @@ class ManyManyPickerField extends HasManyPickerField {
 	public function __construct($parent, $name, $title=null, $options=null) {
 		parent::__construct($parent, $name, $title, $options);
 
-		list($parentClass, $componentClass, $parentField, $componentField, $table) = $parent->many_many($this->name);
+		$this->originalParent = $parent;
+		$this->originalName = $name;
+
+		if (strstr($this->originalName, '.')) {
+			$fields = explode('.', $this->originalName);
+			$name = array_pop($fields);
+			for ($i = 0; $i < count($fields); $i++) {
+				$parent = $parent->{$fields[$i]}();
+			}
+		}
+
+		list($parentClass, $componentClass, $parentField, $componentField, $table) = $parent->many_many($name);
 
 		$this->parentField = $parentField;
 		$this->componentField = $componentField;
 		$this->joinTable = $table;
 		$this->otherClass = ( $parent->class == $parentClass || ClassInfo::is_subclass_of($parent->class, $parentClass)) ? $componentClass : $parentClass;
+
+		if ($name != $this->originalName) {
+			$this->parent = $parent;
+			$this->name = $name;
+			$this->otherClass = $componentClass;
+		}
 	}
 
 	public function getSortableTable() {
