@@ -28,6 +28,24 @@ class HasOnePickerField extends HasManyPickerField {
 
 		return Director::is_ajax() ? $this->FieldHolder() : Director::redirectBack();
 	}
+	
+	public function EditForm() {
+		$item      = singleton($this->getOtherClass());
+		$fields    = $item->{$this->getOption('FieldsMethod')}();
+		$validator = $this->getOption('ValidatorMethod');
+
+		$validator = $item->hasMethod($validator) ? $item->$validator() : new RequiredFields();
+		$validator->setJavascriptValidationHandler('none');
+
+		$fields->removeByName($this->parent->getRemoteJoinField($this->name,'has_one'));
+
+		$actions = new FieldSet(
+			new FormAction('doEdit', _t('ItemSetField.SAVE', 'Save'))
+		);
+
+		return new Form($this, 'EditForm', $fields, $actions, $validator);
+	}
+
 
 	public function Delete($data, $item) {
 		if (!$item->canDelete()) {
