@@ -18,6 +18,9 @@ abstract class ItemSetField extends FormField {
 		'' => 'FieldHolder'
 	);
 
+	public static $search_button_title = 'Search';
+	public static $create_button_title = 'Create';
+
 	public function __construct($name, $title = null, $options = array()) {
 		parent::__construct($name, $title);
 

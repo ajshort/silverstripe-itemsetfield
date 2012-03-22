@@ -109,14 +109,14 @@ class HasManyPickerField extends ItemSetField {
 
 		if ($this->getOption('AllowCreate') && singleton($this->getOtherClass())->canCreate()) {
 			$actions->push(new ArrayData(array(
-				'Name' => 'Create',
+				'Name' => self::$create_button_title,
 				'Link' => Controller::join_links($this->Link(), 'CreateNew')
 			)));
 		}
 
 		if ($this->getOption('Searchable')) {
 			$actions->push(new ArrayData(array(
-				'Name'       => 'Search',
+				'Name'       => self::$search_button_title,
 				'Link'       => Controller::join_links($this->Link(), 'Search'),
 				'ExtraClass' => 'search'
 			)));
