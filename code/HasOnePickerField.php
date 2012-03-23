@@ -15,7 +15,9 @@ class HasOnePickerField extends HasManyPickerField {
 	public function Add($data, $item) {
 		$accessorfield = $this->name . 'ID';
 		$this->parent->$accessorfield = $item->ID;
-		$this->parent->write();
+		if ($this->parent->ID) {
+			$this->parent->write();
+		}
 
 		return Director::is_ajax() ? $this->FieldHolder() : Director::redirectBack();
 	}
@@ -23,7 +25,9 @@ class HasOnePickerField extends HasManyPickerField {
 	public function Remove($data, $item) {
 		$accessorfield = $this->name . 'ID';
 		$this->parent->$accessorfield = null;
-		$this->parent->write();
+		if ($this->parent->ID) {
+			$this->parent->write();
+		}
 		$this->parent->flushCache();
 
 		return Director::is_ajax() ? $this->FieldHolder() : Director::redirectBack();
@@ -35,7 +39,9 @@ class HasOnePickerField extends HasManyPickerField {
 		}
 
 		$this->parent->{$this->name . 'ID'} = null;
-		$this->parent->write();
+		if ($this->parent->ID) {
+			$this->parent->write();
+		}
 		$item->delete();
 
 		return Director::is_ajax() ? $this->FieldHolder() : Director::redirectBack();
@@ -50,7 +56,10 @@ class HasOnePickerField extends HasManyPickerField {
 	}
 
 	public function saveInto(DataObject $record) {
-		// nothing to do here
+		if($this->value && is_array($this->value)){
+			$accessorfield = $this->name . 'ID';
+			$record->$accessorfield = $this->value[0];
+		}
 	}
 
 }
