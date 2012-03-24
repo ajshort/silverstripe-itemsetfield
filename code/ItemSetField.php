@@ -337,7 +337,7 @@ class ItemSetField_Item extends RequestHandler {
 	}
 
 	public function Label() {
-		if (method_exists($this->item, 'Summary')) $summary = $this->item->Summary();
+		if ($this->item->hasMethod('Summary')) $summary = $this->item->Summary();
 		else {
 			$summary = array();
 			foreach ($this->item->summaryFields() as $field => $nice) {
