@@ -150,7 +150,14 @@ class HasManyPickerField extends ItemSetField {
 	}
 
 	public function saveInto(DataObject $record) {
-		$set = $record->{$this->name}();
+		if (strstr($this->originalName, '.')) {
+			$set = $record;
+			foreach (explode('.', $this->originalName) as $field) {
+				$set = $set->{$field}();
+			}
+		} else {
+			$set = $record->{$this->name}();
+		}
 
 		if (!$this->getOption('Sortable') || !count($set)) {
 			return;
@@ -201,7 +208,7 @@ class HasManyPickerField extends ItemSetField {
 	}
 
 	public function SearchForm() {
-		$context = singleton($this->otherClass)->getDefaultSearchContext();
+		$context = singleton($this->getOtherClass())->getDefaultSearchContext();
 		$fields  = $context->getSearchFields();
 
 		$form = new Form($this, 'SearchForm',
