@@ -98,7 +98,10 @@ class ManyManyPickerField_Item extends ItemSetField_Item {
 		$set   = $field->parent->$name();
 		$extra = $field->parent->many_many_extraFields($name);
 
-		$data  = array_intersect_key($form->getData(), $extra);
+		$data = $form->getData();
+		if (is_array($extra)) {
+			$data  = array_intersect_key($data, $extra);
+		}
 		$set->add($this->item, $data);
 
 		return $this->parent->parent->FieldHolder();
