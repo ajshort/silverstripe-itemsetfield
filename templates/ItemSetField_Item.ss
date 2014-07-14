@@ -10,6 +10,6 @@
 	<% if DefaultAction %>
 		<a class="itemsetfield-action <% if Confirmed %>ss-itemsetfield-confirmed<% end_if %>" href="$DefaultAction.Link">$Label</a>
 	<% else %>
-		$Label
+		<span class="label">$Label</span>
 	<% end_if %>
 </li>

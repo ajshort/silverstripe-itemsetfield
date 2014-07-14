@@ -18,6 +18,9 @@ abstract class ItemSetField extends FormField {
 		'' => 'FieldHolder'
 	);
 
+	public static $search_button_title = 'Search';
+	public static $create_button_title = 'Create';
+
 	public function __construct($name, $title = null, $options = array()) {
 		parent::__construct($name, $title);
 
@@ -334,7 +337,7 @@ class ItemSetField_Item extends RequestHandler {
 	}
 
 	public function Label() {
-		if (method_exists($this->item, 'Summary')) $summary = $this->item->Summary();
+		if ($this->item->hasMethod('Summary')) $summary = $this->item->Summary();
 		else {
 			$summary = array();
 			foreach ($this->item->summaryFields() as $field => $nice) {

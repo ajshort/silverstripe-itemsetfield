@@ -111,7 +111,7 @@ $('a.itemsetfield-action').live('click', function() {
 			return false;
 		}
 	}
-	
+
 	link.text(ss.i18n._t('ItemSetField.LOADING', 'Loading...'));
 	link.addClass('ui-state-disabled');
 
@@ -122,10 +122,12 @@ $('a.itemsetfield-action').live('click', function() {
 	return false;
 });
 
-$('.itemsetfield-dialog form').live('reset', function() {
+$('.itemsetfield-dialog form').live('reset', function(e) {
 	$('input, select', this)
 		.not('.action, :hidden')
 		.val('')
 		.removeAttr('checked').removeAttr('selected');
+    e.preventDefault();
 });
+
 })(jQuery);

@@ -53,4 +53,20 @@ class HasOnePickerField extends HasManyPickerField {
 		// nothing to do here
 	}
 
+	public function CreateForm() {
+		$sng       = singleton($this->getOtherClass());
+		$fields    = $sng->{$this->getOption('FieldsMethod')}();
+		$validator = $this->getOption('ValidatorMethod');
+
+		$validator = $sng->hasMethod($validator) ? $sng->$validator() : new RequiredFields();
+		$validator->setJavascriptValidationHandler('none');
+
+		$fields->removeByName($this->parent->has_one($this->name));
+
+		$actions = new FieldSet(
+			new FormAction('doCreate', _t('ItemSetField.CREATE', 'Create'))
+		);
+
+		return new Form($this, 'CreateForm', $fields, $actions, $validator);
+	}
 }
